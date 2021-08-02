@@ -1,0 +1,39 @@
+<!-- ---------------------------------------------------------------------------
+// Copyright (c) 2021. Nikola Vukićević
+---------------------------------------------------------------------------- -->
+
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+		<title></title>
+		<link rel='stylesheet' href='stil.css'>
+		<script sync defer src='definicije_jezika.js'></script>
+		<script sync defer src='primeri.js'></script>
+		<script sync defer src='highlighter.js'></script>
+	</head>
+
+	<body>
+		<main id='wrapper'>
+			<pre id='polje_ispis'>
+				
+			</pre>
+			<div id='forma_izbor_jezika'>
+				<div class='forma_izbor_jezika_jezik'>
+					<input type='radio' id='izbor_jezika_css' onclick='radioKlik(1)' checked name='radio_izbor_jezika'/>
+					<label for='izbor_jezika_css'>CSS</label>
+				</div>
+				<div class='forma_izbor_jezika_jezik'>
+					<input type='radio' id='izbor_jezika_js' onclick='radioKlik(2)' name='radio_izbor_jezika'/>
+					<label for='izbor_jezika_js'>JavaScript</label>
+				</div>
+				<div class='forma_izbor_jezika_jezik'>
+					<input type='radio' id='izbor_jezika_html' onclick='radioKlik(3)' name='radio_izbor_jezika'/>
+					<label for='izbor_jezika_html'>HTML</label>
+				</div>
+			</div>
+		</main>
+	</body>
+</html>

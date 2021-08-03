@@ -6,34 +6,68 @@
 
 <html>
 	<head>
-		<meta charset='utf-8'>
-		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
 		<title></title>
-		<link rel='stylesheet' href='stil.css'>
-		<script sync defer src='definicije_jezika.js'></script>
-		<script sync defer src='primeri.js'></script>
-		<script sync defer src='highlighter.js'></script>
+		<link rel="stylesheet" href="stil.css">
+		<script src="primeri.js"></script>
+		<script src="definicije_jezika.js"></script>
+		<script src="highlighter_funkcije.js"></script>
+		<script sync="" defer="" src="highlighter.js"></script>
 	</head>
 
 	<body>
-		<main id='wrapper'>
-			<pre id='polje_ispis'>
+		<main id="wrapper">
+			<pre id="polje_ispis">
 				
 			</pre>
-			<div id='forma_izbor_jezika'>
-				<div class='forma_izbor_jezika_jezik'>
-					<input type='radio' id='izbor_jezika_css' onclick='radioKlik(1)' checked name='radio_izbor_jezika'/>
-					<label for='izbor_jezika_css'>CSS</label>
+			<div id="forma_izbor_jezika">
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_1" onchange="radioKlik(1)" checked="" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_1">CSS</label>
 				</div>
-				<div class='forma_izbor_jezika_jezik'>
-					<input type='radio' id='izbor_jezika_js' onclick='radioKlik(2)' name='radio_izbor_jezika'/>
-					<label for='izbor_jezika_js'>JavaScript</label>
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_2" onchange="radioKlik(2)" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_2">JavaScript</label>
 				</div>
-				<div class='forma_izbor_jezika_jezik'>
-					<input type='radio' id='izbor_jezika_html' onclick='radioKlik(3)' name='radio_izbor_jezika'/>
-					<label for='izbor_jezika_html'>HTML</label>
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_3" onchange="radioKlik(3)" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_3">HTML</label>
+				</div>
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_4" onchange="radioKlik(4)" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_4">C</label>
+				</div>
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_5" onchange="radioKlik(5)" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_5">C++</label>
+				</div>
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_6" onchange="radioKlik(6)" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_6">C#</label>
+				</div>
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_7" onchange="radioKlik(7)" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_7">Java</label>
+				</div>
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_8" onchange="radioKlik(8)" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_8">SQL</label>
+				</div>
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_9" onchange="radioKlik(9)" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_9">Python</label>
+				</div>
+				<div class="forma_izbor_jezika_jezik">
+					<input id="izbor_jezika_10" onchange="radioKlik(10)" name="radio_izbor_jezika" type="radio">
+					<label for="izbor_jezika_10">PHP</label>
+				</div>
+				<div style="font-size: 0.6em; margin: 4px 0 0 0; color: #aaa;">
+					Prečica: &lt;Q&gt;
 				</div>
 			</div>
 		</main>
+	
 	</body>
 </html>

@@ -54,21 +54,14 @@ function proveraTokena(lista, regex, token) {
 function binarnaPretraga(element, niz) {
 	let le  = 0, de = niz.length - 1;
 	let ind = parseInt(Math.floor((le + de) * 0.5));
-	//console.log(`nizDuzina: ${niz.length}`)
-
+	
 	while(le <= de) {
-		
-		//console.log(`element: ${element}`)
-		//console.log(`niz[ind]: ${niz[ind]}`)
-		
+
 		if(element == niz[ind]) {
 			return true;
 		}
-
-		let char_el  = element.charCodeAt(0);
-		let char_niz = niz[ind].charCodeAt(0);
-
-		if(char_el < char_niz) {
+		
+		if(element < niz[ind]) {
 			de = ind - 1;
 		}
 		else {
@@ -87,8 +80,8 @@ function prepravljanjeTokena(lista, nizSpecijalnih, token) {
 		if(lista[i][1] == true) continue;
 		if(lista[i][0] == "")   continue;
 
-		if(nizSpecijalnih.includes(lista[i][0])) {
-		//if(binarnaPretraga(lista[i][0], nizSpecijalnih)) {
+		//if(nizSpecijalnih.includes(lista[i][0])) {
+		if(binarnaPretraga(lista[i][0], nizSpecijalnih)) {
 			lista[i][1] = true;
 			lista[i][2] = token;
 		}

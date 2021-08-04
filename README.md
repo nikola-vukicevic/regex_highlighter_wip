@@ -8,6 +8,7 @@ Za sada WIP (pre  svega, pretraga rezervisanih reči bi mogla da se ubrza preko 
 Najvažnije datoteke su:
 
 definicije_jezika.js
+
 highlighter_funkcije.js
 
 ## Demo

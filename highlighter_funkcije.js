@@ -1,10 +1,16 @@
+/* -------------------------------------------------------------------------- */
+// Copyright (c) 2021. Nikola Vukićević
+/* -------------------------------------------------------------------------- */
+
 function formatiranjeListe(lista, rezim) {
-	let s = "";
-	
-	for(let i = 0; i < lista.length; i++) {
+	let s       = "";
+	let granica = lista.length - 1;
+
+	while(lista[granica][2] == "white_space" || lista[granica][0] == "") granica--;
+
+	for(let i = 0; i <= granica; i++) {
 		
-		//if(lista[i][1] !== false) continue;
-		if(lista[i][0] === "")    continue;
+		if(lista[i][0] === "") continue;
 
 		if(rezim == "html") {
 			s += `<span class='token ${lista[i][2]}' title='${lista[i][2]}'>${lista[i][0]}</span>`
@@ -36,13 +42,13 @@ function proveraListe(lista, regex, token) {
 	}
 }
 
-function proveraTokena(lista, regex, token) {
+function proveraTokena(lista, regexSplit, regexProvera, token) {
 	for(let i = 0; i < lista.length; i++) {
 		if(lista[i][1] == false) {
 			
-			let novaLista = rastavljanje(lista[i][0], regex);
+			let novaLista = rastavljanje(lista[i][0], regexSplit);
 			
-			proveraListe(novaLista, regex, token);
+			proveraListe(novaLista, regexProvera, token);
 			
 			for(let j = 0; j < novaLista.length; j++) {
 				lista.splice(i + j, (j == 0)? 1 : 0, novaLista[j]);
@@ -90,7 +96,8 @@ function prepravljanjeTokena(lista, nizSpecijalnih, token) {
 
 function proveraListeTokena(listaTokena, listaDefinicija) {
 	listaDefinicija.forEach(e => {
-		proveraTokena(listaTokena, e[0], e[1]);
+		let regex = (e.length == 2)? e[0] : e[2];
+		proveraTokena(listaTokena, e[0], regex, e[1]);
 	});
 }
 

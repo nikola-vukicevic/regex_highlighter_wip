@@ -6,9 +6,30 @@ let poljeZaIspis = document.getElementById("polje_ispis");
 let listaTokena  = null;
 let radioDugme   = 1;
 let brojDugmica  = 10;
+let DEBUG        = false;
 document.addEventListener("keydown", prepoznavanjeTastera);
 
 /* ----- Prave stvari su u datoteci highlighter_funkcije.js ----- */
+
+function obradaTXTKoda(tekst, polje) {
+	/* ----- telemetrija ------ */
+	let t1 = performance.now();
+
+	listaTokena = inicijalizacijaListeTokena(tekst.trim());
+	
+	//proveraListe(listaTokena, "" , "tekst");
+	//prepravljanjeTokena(listaTokena, CSS_htmlTagovi,  "html_tag");
+	//prepravljanjeTokena(listaTokena, CSS_pseudoklase, "pseudoklasa");
+	//prepravljanjeTokena(listaTokena, CSS_jedinice,    "jedinica");
+
+	/* ----- telemetrija ------ */
+	let t2    = performance.now();
+	let odziv = (t2 - t1) + "ms";
+	if(DEBUG) console.log(odziv);
+
+	//console.log(listaTokena)
+	polje.innerHTML = formatiranjeListe(listaTokena, "html");
+}
 
 function obradaCSSKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
@@ -24,7 +45,7 @@ function obradaCSSKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 	polje.innerHTML = formatiranjeListe(listaTokena, "html");
@@ -43,7 +64,7 @@ function obradaJavaScriptKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 	polje.innerHTML = formatiranjeListe(listaTokena, "html");
@@ -66,7 +87,7 @@ function obradaHTMLKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 
@@ -86,7 +107,7 @@ function obradaCKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 	polje.innerHTML = formatiranjeListe(listaTokena, "html");
@@ -105,7 +126,7 @@ function obradaCPPKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 	polje.innerHTML = formatiranjeListe(listaTokena, "html");
@@ -124,7 +145,7 @@ function obradaCSharpKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 	polje.innerHTML = formatiranjeListe(listaTokena, "html");
@@ -143,7 +164,7 @@ function obradaJavaKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 	polje.innerHTML = formatiranjeListe(listaTokena, "html");
@@ -163,7 +184,7 @@ function obradaSQLKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 
@@ -184,7 +205,7 @@ function obradaPythonKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 
@@ -205,7 +226,84 @@ function obradaPHPKoda(tekst, polje) {
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
-	console.log(odziv);
+	if(DEBUG) console.log(odziv);
+
+	//console.log(listaTokena)
+
+	polje.innerHTML = formatiranjeListe(listaTokena, "html");
+}
+
+function obradaJSONKoda(tekst, polje) {
+	
+	/* ----- telemetrija ------ */
+	let t1 = performance.now();
+
+	listaTokena = inicijalizacijaListeTokena(tekst);
+	//console.log(listaTokena)
+	proveraListeTokena(listaTokena,  JSON_definicijaJezika);
+		
+	/* ----- telemetrija ------ */
+	let t2    = performance.now();
+	let odziv = (t2 - t1) + "ms";
+	if(DEBUG) console.log(odziv);
+
+	//console.log(listaTokena)
+
+	polje.innerHTML = formatiranjeListe(listaTokena, "html");
+}
+
+function obradaAssemblerKoda(tekst, polje) {
+	
+	/* ----- telemetrija ------ */
+	let t1 = performance.now();
+
+	listaTokena = inicijalizacijaListeTokena(tekst);
+	//console.log(listaTokena)
+	proveraListeTokena(listaTokena,  Assembler_definicijaJezika);
+	prepravljanjeTokena(listaTokena, Assembler_rezervisaneReci,  "rezervisana_rec");
+		
+	/* ----- telemetrija ------ */
+	let t2    = performance.now();
+	let odziv = (t2 - t1) + "ms";
+	if(DEBUG) console.log(odziv);
+
+	//console.log(listaTokena)
+
+	polje.innerHTML = formatiranjeListe(listaTokena, "html");
+}
+
+function obradaRegExKoda(tekst, polje) {
+	
+	/* ----- telemetrija ------ */
+	let t1 = performance.now();
+
+	listaTokena = inicijalizacijaListeTokena(tekst);
+	//console.log(listaTokena)
+	proveraListeTokena(listaTokena,  RegEx_definicijaJezika);
+			
+	/* ----- telemetrija ------ */
+	let t2    = performance.now();
+	let odziv = (t2 - t1) + "ms";
+	if(DEBUG) console.log(odziv);
+
+	//console.log(listaTokena)
+
+	polje.innerHTML = formatiranjeListe(listaTokena, "html");
+}
+
+function obradaMarkupKoda(tekst, polje) {
+	
+	/* ----- telemetrija ------ */
+	let t1 = performance.now();
+
+	listaTokena = inicijalizacijaListeTokena(tekst);
+	//console.log(listaTokena)
+	proveraListeTokena(listaTokena,  Markup_definicijaJezika);
+			
+	/* ----- telemetrija ------ */
+	let t2    = performance.now();
+	let odziv = (t2 - t1) + "ms";
+	if(DEBUG) console.log(odziv);
 
 	//console.log(listaTokena)
 

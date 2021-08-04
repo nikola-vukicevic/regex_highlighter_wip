@@ -8,9 +8,10 @@ let SABLON_KOMENTAR_LINIJSKI  = /(\/\/.*\n)/g;
 let SABLON_KOMENTAR_SQL       = /(\-\-.*\n)/g;
 let SABLON_KOMENTAR_PYTHON    = /(\#.*\n)/g;
 
-let SABLON_PRETPROCESOR       = /(\#include.*\n)/g;
-let SABLON_NISKA_APOSTROFI    = /(\'.*?\')/g;
-let SABLON_NISKA_NAVODNICI    = /(\".*?\")/g;
+let SABLON_PRETPROCESOR       = /(\#.*\n)/g;
+let SABLON_NISKA_APOSTROFI    = /(\'[\s\S]*?\')/g;
+let SABLON_NISKA_NAVODNICI    = /(\"[\s\S]*?\")/g;
+let SABLON_NISKA_BACKTICK     = /(\`[\s\S]*?\`)/g;
 let SABLON_ZAGRADA_OTV        = /(\()/g;
 let SABLON_ZAGRADA_ZAT        = /(\))/g;
 let SABLON_V_ZAGRADA_OTV      = /(\{)/g;
@@ -20,9 +21,18 @@ let SABLON_U_ZAGRADA_ZAT      = /(\])/g;
 let SABLON_HEX_VREDNOST       = /(\B\#[\dA-Fa-f]{3,6}\b)/g;
 let SABLON_DECIMALNA_VREDNOST = /(\d*\.\d+)/g;
 let SABLON_DEKADNI_BROJ       = /(\b\d+)/g;
+let SABLON_ASSEMBLER_ADRESA   = /(0x\d+)/g;
 let SABLON_WHITE_SPACE        = /([ \t\n]+)/g;
-let SABLON_OPERATOR           = /(\+\+|\-\-|&gt;\=|&gt;|&lt;\=|&lt;|\=\=|&lt;&lt;|&gt;&gt;|\-&gt;|\=|\+|\-|\*|\/)/g;
-let SABLON_SEPARATOR          = /([>\.,:;]{1})/g;
+let SABLON_OPERATOR           = /(\+\+|\-\-|&gt;\=|&gt;|&lt;\=|&lt;|\=\=|&lt;&lt;|&gt;&gt;|\-&gt;|\&\&|\|\||\=|\+|\-|\*|\/)/g;
+let SABLON_SEPARATOR          = /(&lt;|&gt;|\.|\,|\:|\;)/g;
+
+/* -------------------------------------------------------------------------- */
+// Jezik - TXT
+/* -------------------------------------------------------------------------- */
+
+let TXT_definicijaJezika = [
+
+];
 
 /* -------------------------------------------------------------------------- */
 // Jezik - CSS
@@ -31,13 +41,15 @@ let SABLON_SEPARATOR          = /([>\.,:;]{1})/g;
 let CSS_definicijaJezika = [
 	[  SABLON_KOMENTAR_BLOK        ,  "komentar_blok"                 ]  ,  // /* ---- komentar ---- */
 	[  SABLON_KOMENTAR_LINIJSKI    ,  "komentar_linijski"             ]  ,  // // komentar
-	[  SABLON_NISKA_APOSTROFI      ,  "niska_apostrofi"               ]  ,  // 'niska niska niska'
 	[  SABLON_NISKA_NAVODNICI      ,  "niska_navodnici"               ]  ,  // "niska niska niska"
+	[  SABLON_NISKA_APOSTROFI      ,  "niska_apostrofi"               ]  ,  // 'niska niska niska'
 	[  SABLON_V_ZAGRADA_OTV        ,  "selektor_otvarajuca_zagrada"   ]  ,  // {
 	[  SABLON_V_ZAGRADA_ZAT        ,  "selektor_zatvarajuca_zagrada"  ]  ,  // {
 	[  SABLON_ZAGRADA_OTV          ,  "zagrada_obicna_otvorena"       ]  ,  // (
 	[  SABLON_ZAGRADA_ZAT          ,  "zagrada_obicna_zatvorena"      ]  ,  // )
 	[  SABLON_HEX_VREDNOST         ,  "heksadecimalna_vrednost"       ]  ,  // #ee04e7
+	[  /(\:[A-Za-z]+)/g            ,  "pseudoklasa"                   ]  ,  // #ajDi_01
+	[  /(\-\-[a-z_]+\b)/g          ,  "css_var"                       ]  ,  // #ajDi_01
 	[  /(\#[\dA-Za-z _]*)/g        ,  "id_naziv"                      ]  ,  // #ajDi_01
 	[  SABLON_DECIMALNA_VREDNOST   ,  "decimalna_vrednost"            ]  ,  // 12.54
 	[  /([ \t]*\.[\dA-Za-z _]*)/g  ,  "klasa_naziv"                   ]  ,  // #klasa_02
@@ -71,7 +83,7 @@ let CSS_htmlTagovi = [
 	"button",
 	"canvas",
 	"caption",
-	"center",
+	//"center",
 	"cite",
 	"code",
 	"col",
@@ -100,6 +112,11 @@ let CSS_htmlTagovi = [
 	"frame",
 	"frameset",
 	"h1",
+	"h2",
+	"h3",
+	"h4",
+	"h5",
+	"h6",
 	"head",
 	"header",
 	"hgroup",
@@ -117,6 +134,7 @@ let CSS_htmlTagovi = [
 	"legend",
 	"li",
 	"link",
+	"main",
 	"map",
 	"mark",
 	"menu",
@@ -165,17 +183,19 @@ let CSS_htmlTagovi = [
 	"tt",
 	"u",
 	"ul",
-	"var",
+	//"var",
 	"video",
 	"wbr",
 ];
 
 let CSS_pseudoklase = [
-	"hover"
+	"hover",
+	"active",
 ];
 
 let CSS_jedinice = [
 	"em",
+	"pt",
 	"px",
 	"rem"
 ];
@@ -189,6 +209,7 @@ let JS_definicijaJezika = [
 	[  SABLON_KOMENTAR_LINIJSKI   ,  "komentar_linijski"             ]  ,  // // komentar
 	[  SABLON_NISKA_APOSTROFI     ,  "niska_apostrofi"               ]  ,  // 'niska niska niska'
 	[  SABLON_NISKA_NAVODNICI     ,  "niska_navodnici"               ]  ,  // "niska niska niska"
+	[  SABLON_NISKA_BACKTICK      ,  "niska_backtick"                ]  ,  // "niska niska niska"
 	[  SABLON_V_ZAGRADA_OTV       ,  "blok_koda_otvarajuca_zagrada"  ]  ,  // {
 	[  SABLON_V_ZAGRADA_ZAT       ,  "blok_koda_zatvarajuca_zagrada" ]  ,  // {
 	[  SABLON_ZAGRADA_OTV         ,  "zagrada_obicna_otvorena"       ]  ,  // (
@@ -204,22 +225,54 @@ let JS_definicijaJezika = [
 ];
 
 let JS_RezervisaneReci = [
+	"async",
+	"await",
+	"break",
+	"case",
+	"catch",
+	"class",
 	"const",
+	"default",
+	"else",
 	"for",
 	"function",
 	"if",
 	"let",
+	"new",
 	"return",
+	"switch",
+	"then",
+	"try",
 	"var",
 	"while",
 ];
 
 let JS_SpecijalniTokeni = [
+	"Date",
+	"Promise",
+	"all",
 	"console",
+	"constructor",
 	"document",
+	"error",
+	"fetch",
 	"getElementById",
 	"getElementsByClassName",
+	"getItem",
+	"innerHTML",
+	"innerText",
+	"localStorage",
 	"log",
+	"map",
+	"pop",
+	"push",
+	"reject",
+	"resolve",
+	"sessionStorage",
+	"setInterval",
+	"setItem",
+	"setTimeout",
+	"shift",
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -229,7 +282,7 @@ let JS_SpecijalniTokeni = [
 let HTML_definicijaJezika = [
 	[  /(\&lt\;\!\-\-.*\-\-\&gt\;)/g  ,  "komentar"         ]  ,  // <! ---- komentar ---- -->
 	[  /(&lt;\/[A-Za-z\d]*&gt;)/g     ,  "tag_zatvarajuci"  ]  ,  // 'niska niska niska'
-	[  /(&lt;.*&gt;)/g                ,  "tag_otvarajuci"   ]  ,  // 'niska niska niska'
+	[  /(&lt;[\s\S]*?&gt;)/g                ,  "tag_otvarajuci"   ]  ,  // 'niska niska niska'
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -262,8 +315,8 @@ let CLIKE_RezervisaneReci = [
 	"Int32",
 	"Int64",
 	"NULL",
-	"Uint32",
-	"Uint64",
+	"UInt32",
+	"UInt64",
 	"base",
 	"bool",
 	"boolean",
@@ -290,6 +343,7 @@ let CLIKE_RezervisaneReci = [
 	"float",
 	"for",
 	"foreach",
+	"get",
 	"if",
 	"implements",
 	"import",
@@ -305,6 +359,7 @@ let CLIKE_RezervisaneReci = [
 	"protected",
 	"public",
 	"return",
+	"set",
 	"short",
 	"signed",
 	"sizeof",
@@ -327,13 +382,19 @@ let CLIKE_RezervisaneReci = [
 
 let CLIKE_SpecijalniTokeni = [
 	"Console",
+	"ReadKey",
+	"ReadLine",
 	"System",
 	"WriteLine",
+	"cout",
+	"endl",
 	"fclose",
 	"fopen",
 	"out",
 	"printf",
 	"scanf",
+	"string",
+	"vector",
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -366,6 +427,8 @@ let SQL_rezervisaneReci = [
 	"DELETE",
 	"FOREIGN",
 	"FROM",
+	"INSERT",
+	"INTO",
 	"KEY",
 	"NOT",
 	"NULL",
@@ -391,6 +454,8 @@ let SQL_rezervisaneReci = [
 	"delete",
 	"foreign",
 	"from",
+	"insert",
+	"into",
 	"key",
 	"not",
 	"null",
@@ -442,6 +507,7 @@ let Python_rezervisaneReci = [
 	"else",
 	"for",
 	"if",
+	"import",
 	"in",
 	"or",
 	"return",
@@ -461,8 +527,8 @@ let Python_specijalniTokeni = [
 let PHP_definicijaJezika = [
 	[  SABLON_KOMENTAR_BLOK       ,  "komentar_blok"                 ]  ,  // /* ---- komentar ---- */
 	[  SABLON_KOMENTAR_LINIJSKI   ,  "komentar_linijski"             ]  ,  // // komentar
-	[  SABLON_NISKA_APOSTROFI     ,  "niska_apostrofi"               ]  ,  // 'niska niska niska'
 	[  SABLON_NISKA_NAVODNICI     ,  "niska_navodnici"               ]  ,  // "niska niska niska"
+	[  SABLON_NISKA_APOSTROFI     ,  "niska_apostrofi"               ]  ,  // 'niska niska niska'
 	[  SABLON_V_ZAGRADA_OTV       ,  "blok_koda_otvarajuca_zagrada"  ]  ,  // {
 	[  SABLON_V_ZAGRADA_ZAT       ,  "blok_koda_zatvarajuca_zagrada" ]  ,  // {
 	[  SABLON_ZAGRADA_OTV         ,  "zagrada_obicna_otvorena"       ]  ,  // (
@@ -522,16 +588,104 @@ let PHP_specijalniTokeni = [
 	"$this",
 	"Console",
 	"WriteLine",
+	"abs",
 	"exit",
 	"fclose",
 	"function",
 	"header",
-	"html_entities",
+	"htmlentities",
 	"isset",
+	"json_encode",
+	"mysqli_close",
+	"mysqli_connect",
 	"mysqli_fetch_assoc",
+	"mysqli_num_rows",
 	"mysqli_query",
 	"mysqli_real_escape_string",
+	"password_hash",
+	"pregmatch",
+	"rand",
+	"rand",
 	"session_start",
+	"set_cookie",
+	"sqrt",
+	"str_replace",
+	"strlen",
 	"trim",
 	"unset",
+];
+
+/* -------------------------------------------------------------------------- */
+// Jezik - JSON
+/* -------------------------------------------------------------------------- */
+
+let JSON_definicijaJezika = [
+	[  /(\".+?\")(?=[\t ]*?\:)/g  ,  "svojstvo_naziv"  ,  /^(\".+\")$/g  ]  ,
+	[  /(\".+?\")/g               ,  "svojstvo_vrednost"  ]  ,
+	[  SABLON_DECIMALNA_VREDNOST  ,  "brojcana_vrednost"  ]  ,
+	[  SABLON_DEKADNI_BROJ        ,  "brojcana_vrednost"  ]  ,
+	[  /(\{|\}|\:|\,|\[|\])/g     ,  "json_separator"     ]  ,
+
+];
+
+/* -------------------------------------------------------------------------- */
+// Jezik - ASSEMBLER
+/* -------------------------------------------------------------------------- */
+
+let Assembler_definicijaJezika = [
+	[  SABLON_ASSEMBLER_ADRESA    ,  "assembler_adresa"   ]  ,
+	[  SABLON_DECIMALNA_VREDNOST  ,  "brojcana_vrednost"  ]  ,
+	[  SABLON_DEKADNI_BROJ        ,  "brojcana_vrednost"  ]  ,
+	[  SABLON_WHITE_SPACE         ,  "white_space"        ]  ,
+	[  SABLON_SEPARATOR           ,  "separator"          ]  ,
+];
+
+let Assembler_rezervisaneReci = [
+	"acc",
+	"add",
+	"div",
+	"jnc",
+	"mov",
+];
+
+/* -------------------------------------------------------------------------- */
+// Jezik - RegEx
+/* -------------------------------------------------------------------------- */
+
+let RegEx_definicijaJezika = [
+	[  /(\{.*?\}|\+|\?|\*)/g                        ,  "regex_kvantifikator"  ]  ,
+	[  /(\\w|\\W|\\b|\\B\\c|\\C|\\s|\\S|\\d|\\D)/g  ,  "regex_klase_znakova"  ]  ,
+	[  /(\||\[|\]|\(|\))/g                                ,  "operator"             ]  ,
+	[  /(\\.{1})/g                                  ,  "regex_escape"         ]  ,
+];
+
+let RegEx_rezervisaneReci = [
+	"acc",
+	"add",
+	"div",
+	"jnc",
+	"mov",
+];
+
+/* -------------------------------------------------------------------------- */
+// Jezik - Markup
+/* -------------------------------------------------------------------------- */
+
+let Markup_definicijaJezika = [
+	[  /(######.+?\n)/g     ,  "markup_naslov_h6"   ]  ,
+	[  /(#####.+?\n)/g      ,  "markup_naslov_h5"   ]  ,
+	[  /(####.+?\n)/g       ,  "markup_naslov_h4"   ]  ,
+	[  /(###.+?\n)/g        ,  "markup_naslov_h3"   ]  ,
+	[  /(##.+?\n)/g         ,  "markup_naslov_h2"   ]  ,
+	[  /(#.+?\n)/g          ,  "markup_naslov_h1"   ]  ,
+	[  /(\*[\s\S]*?\*\*)/g  ,  "markup_lista"       ]  ,
+	[  SABLON_SEPARATOR     ,  "separator"          ]  ,
+];
+
+let Markup_rezervisaneReci = [
+	"acc",
+	"add",
+	"div",
+	"jnc",
+	"mov",
 ];

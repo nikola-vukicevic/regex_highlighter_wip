@@ -1,28 +1,48 @@
+/* -------------------------------------------------------------------------- */
+// Copyright (c) 2021. Nikola Vukićević
+/* -------------------------------------------------------------------------- */
+
 let mapaKlasa = new Map();
 
-mapaKlasa.set("css",        "obradaCSSKoda");
-mapaKlasa.set("html",       "obradaHTMLKoda");
-mapaKlasa.set("javascript", "obradaJavaScriptKoda");
-mapaKlasa.set("clike",      "obradaCKoda");
-mapaKlasa.set("java",       "obradaJavaKoda");
-mapaKlasa.set("sql",        "obradaSQLKoda");
-mapaKlasa.set("python",     "obradaPythonKoda");
-mapaKlasa.set("php",        "obradaPHPKoda");
+mapaKlasa.set("language-text",       "obradaTXTKoda");
+mapaKlasa.set("language-assembler",  "obradaAssemblerKoda");
+mapaKlasa.set("language-clike",      "obradaCKoda");
+mapaKlasa.set("language-css",        "obradaCSSKoda");
+mapaKlasa.set("language-html",       "obradaHTMLKoda");
+mapaKlasa.set("language-java",       "obradaJavaKoda");
+mapaKlasa.set("language-javascript", "obradaJavaScriptKoda");
+mapaKlasa.set("language-json",       "obradaJSONKoda");
+mapaKlasa.set("language-markup",     "obradaMarkupKoda");
+mapaKlasa.set("language-php",        "obradaPHPKoda");
+mapaKlasa.set("language-python",     "obradaPythonKoda");
+mapaKlasa.set("language-regex",      "obradaRegExKoda");
+mapaKlasa.set("language-sql",        "obradaSQLKoda");
+mapaKlasa.set("language-xml",        "obradaHTMLKoda");
 
-function obradaBlokova() {
-	
+let spisakKlasa = [
+	"language-text",
+	"language-assembler",
+	"language-css",
+	"language-html",
+	"language-javascript",
+	"language-clike",
+	"language-java",
+	"language-json",
+	"language-markup",
+	"language-sql",
+	"language-python",
+	"language-regex",
+	"language-php",
+	"language-xml",
+];
+
+function obradaBlokova(spisak) {
 	/* ----- telemetrija ------ */
 	let t1 = performance.now();
 
-
-
-	let blokoviKoda = document.getElementsByClassName("language");
-	
-	for(let i = 0; i < blokoviKoda.length; i++) {
-		obradaBloka(blokoviKoda[i]);
-	}
-
-
+	spisak.forEach(klasa =>  {
+		obradaBlokovaJedneKlase(klasa);
+	});
 
 	/* ----- telemetrija ------ */
 	let t2    = performance.now();
@@ -30,72 +50,24 @@ function obradaBlokova() {
 	console.log(`Obrada blokova (vreme obrade: ${odziv})`);
 }
 
-function obradaBloka(blok) {
-	let tekst = blok.innerText;
-
-	tekst = tekst.replace(/</g, "&lt;");
-	tekst = tekst.replace(/>/g, "&gt;");
-
-	let spisakKlasa = blok.classList;
-	let imeFunkcije = "";
-
-	spisakKlasa.forEach(klasa => {
-		if(klasa.startsWith("language-")) {
-			imeFunkcije = klasa.substring(9, klasa.length);
-			imeFunkcije = mapaKlasa.get(imeFunkcije);
-		}
-	});
-
-	//console.log(`Ime funkcije: ${imeFunkcije}`);
-
-	window[imeFunkcije](tekst, blok);
+function obradaBlokovaJedneKlase(klasa) {
+	
+	let blokoviKoda = document.getElementsByClassName(klasa);
+	
+	for(let i = 0; i < blokoviKoda.length; i++) {
+		let imeFunkcije = mapaKlasa.get(klasa);
+		obradaBloka(blokoviKoda[i], imeFunkcije);
+	}
 }
 
-function obradaBloka2(blok) {
-	let tekst = blok.innerText;
+function obradaBloka(blok, imeFunkcije) {
+	
+	let tekst = blok.innerText.trim() + "\n";
 
 	tekst = tekst.replace(/</g, "&lt;");
 	tekst = tekst.replace(/>/g, "&gt;");
 
-	if(blok.classList.contains("language-css")) {
-		obradaCSSKoda(tekst, blok);
-		return;
-	}
-
-	if(blok.classList.contains("language-javascript")) {
-		obradaJavaScriptKoda(tekst, blok);
-		return;
-	}
-
-	if(blok.classList.contains("language-html")) {
-		obradaHTMLKoda(tekst, blok);
-		return;
-	}
-
-	if(blok.classList.contains("language-clike")) {
-		obradaCKoda(tekst, blok);
-		return;
-	}
-
-	if(blok.classList.contains("language-java")) {
-		obradaJavaKoda(tekst, blok);
-		return;
-	}
-
-	if(blok.classList.contains("language-sql")) {
-		obradaSQLKoda(tekst, blok);
-		return;
-	}
-
-	if(blok.classList.contains("language-python")) {
-		obradaPythonKoda(tekst, blok);
-		return;
-	}
-
-	if(blok.classList.contains("language-php")) {
-		obradaPHPKoda(tekst, blok);
-		return;
-	}
+	window[imeFunkcije](tekst, blok);
 }
 
 function odWrapperovanje() {
@@ -104,6 +76,7 @@ function odWrapperovanje() {
 	wrapper.style.height = "auto";	
 }
 
-
-odWrapperovanje();
-obradaBlokova();
+//odWrapperovanje();
+setTimeout(() => {
+	obradaBlokova(spisakKlasa);
+}, 100);

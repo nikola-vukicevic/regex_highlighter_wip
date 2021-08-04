@@ -5,6 +5,11 @@ Posle kontekstnog parsera specijalizovanog za CSS, na red dođe i univerzalni pa
 
 Za sada WIP (pre  svega, pretraga rezervisanih reči bi mogla da se ubrza preko stabla, ili hash mape), ali, već je prilično funkcionalan ....
 
+Najvažnije datoteke su:
+
+definicije_jezika.js
+highlighter_funkcije.js
+
 ## Demo
 
 https://www.codeblog.rs/primeri/regex_highlighter/

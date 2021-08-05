@@ -96,7 +96,7 @@ function prepravljanjeTokena(lista, nizSpecijalnih, token) {
 
 function proveraListeTokena(listaTokena, listaDefinicija) {
 	listaDefinicija.forEach(e => {
-		let regex = (e.length == 2)? e[0] : e[2];
+		let regex = (e.length === 2)? e[0] : e[2];
 		proveraTokena(listaTokena, e[0], regex, e[1]);
 	});
 }

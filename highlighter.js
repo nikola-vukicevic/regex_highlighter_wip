@@ -364,4 +364,4 @@ function prepoznavanjeTastera(event) {
 	}
 }
 
-obradaHTMLKoda(tekstHTML, poljeZaIspis);
+//obradaHTMLKoda(tekstHTML, poljeZaIspis);

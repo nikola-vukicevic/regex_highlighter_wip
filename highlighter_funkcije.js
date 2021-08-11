@@ -10,7 +10,7 @@ function formatiranjeListe(lista, rezim) {
 
 	for(let i = 0; i <= granica; i++) {
 		
-		if(lista[i][0] === "") continue;
+		if(lista[i][0] == "") continue;
 
 		if(rezim == "html") {
 			s += `<span class='token ${lista[i][2]}' title='${lista[i][2]}'>${lista[i][0]}</span>`

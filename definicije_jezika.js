@@ -2,9 +2,11 @@
 // Copyright (c) 2021. Nikola Vukićević
 /* -------------------------------------------------------------------------- */
 
-let SABLON_KOMENTAR_BLOK      = /(\/\*[\s\S]*?\*\/)/g;
+let SABLON_KOMENTAR_BLOK      = /(\/\*[\s\S]*?\*\/\n)/g;
+let SABLON_KOMENTAR_BLOK_2    = /(\/\*[\s\S]*?\*\/)/g;
 let SABLON_KOMENTAR_LINIJSKI  = /(\/\/.*\n)/g;
 let SABLON_PRETPROCESOR       = /(\#.*\n)/g;
+let SABLON_NISKA_UNIVERZALNI  = /(\'[\s\S]*?\'|\"[\s\S]*?\"|\`[\s\S]*?\`)/g;
 let SABLON_NISKA_APOSTROFI    = /(\'[\s\S]*?\')/g;
 let SABLON_NISKA_NAVODNICI    = /(\"[\s\S]*?\")/g;
 let SABLON_NISKA_BACKTICK     = /(\`[\s\S]*?\`)/g;
@@ -19,8 +21,11 @@ let SABLON_DECIMALNA_VREDNOST = /(\d*\.\d+)/g;
 let SABLON_DEKADNI_BROJ       = /(\b\d+)/g;
 let SABLON_ASSEMBLER_ADRESA   = /(0x\d+)/g;
 let SABLON_WHITE_SPACE        = /([ \t\n]+)/g;
-let SABLON_OPERATOR           = /(\+\+|\-\-|&gt;\=|&gt;|&lt;\=|&lt;|\=\=|&lt;&lt;|&gt;&gt;|\-&gt;|\&\&|\|\||\=|\+|\-|\*|\/)/g;
-let SABLON_SEPARATOR          = /(&lt;|&gt;|\.|\,|\:|\;)/g;
+let SABLON_OPERATOR           = /(\+\+|\-\-|&gt;\=|&gt;|&lt;\=|&lt;|\=\=|&lt;&lt;|&gt;&gt;|\-&gt;|\&\&|\;|\|\||\=|\+|\-|\*|\/)/g;
+let SABLON_SEPARATOR          = /(&lt;|&gt;|\.|\,|\:)/g;
+let SABLON_REGULARNI_IZRAZ    = /(\/\(.*?\)\/gi|\/\(.*?\)\/g)/g;
+let SABLON_REGEX_POCETAK      = /(\/\()/;
+let SABLON_REGEX_KRAJ         = /(\)\/g|\)\/gi|\)\/gm|\)\/gmi)/;
 /* ----- Komentari ----- */
 let SABLON_KOMENTAR_SQL       = /(\-\-.*\n)/g;
 let SABLON_KOMENTAR_PYTHON    = /(\#.*\n)/g;
@@ -208,11 +213,17 @@ let CSS_jedinice = [
 /* -------------------------------------------------------------------------- */
 
 let JS_definicijaJezika = [
+	
+	[  SABLON_REGULARNI_IZRAZ     ,  "regex"                         ]  ,  // // komentar
 	[  SABLON_KOMENTAR_BLOK       ,  "komentar_blok"                 ]  ,  // /* ---- komentar ---- */
 	[  SABLON_KOMENTAR_LINIJSKI   ,  "komentar_linijski"             ]  ,  // // komentar
-	[  SABLON_NISKA_APOSTROFI     ,  "niska_apostrofi"               ]  ,  // 'niska niska niska'
-	[  SABLON_NISKA_NAVODNICI     ,  "niska_navodnici"               ]  ,  // "niska niska niska"
-	[  SABLON_NISKA_BACKTICK      ,  "niska_backtick"                ]  ,  // "niska niska niska"
+	
+	[  SABLON_NISKA_UNIVERZALNI   ,  "niska"                         ]  ,  // // komentar
+	//[  SABLON_NISKA_NAVODNICI     ,  "niska_navodnici"               ]  ,  // "niska niska niska"
+	//[  SABLON_NISKA_APOSTROFI     ,  "niska_apostrofi"               ]  ,  // 'niska niska niska'
+	//[  SABLON_NISKA_BACKTICK      ,  "niska_backtick"                ]  ,  // "niska niska niska"
+	[  SABLON_KOMENTAR_BLOK_2     ,  "komentar_blok"                 ]  ,  // /* ---- komentar ---- */
+	
 	[  SABLON_V_ZAGRADA_OTV       ,  "blok_koda_otvarajuca_zagrada"  ]  ,  // {
 	[  SABLON_V_ZAGRADA_ZAT       ,  "blok_koda_zatvarajuca_zagrada" ]  ,  // {
 	[  SABLON_ZAGRADA_OTV         ,  "zagrada_obicna_otvorena"       ]  ,  // (
@@ -237,6 +248,7 @@ let JS_RezervisaneReci = [
 	"const",
 	"default",
 	"else",
+	"false",
 	"for",
 	"function",
 	"if",
@@ -245,6 +257,7 @@ let JS_RezervisaneReci = [
 	"return",
 	"switch",
 	"then",
+	"true",
 	"try",
 	"var",
 	"while",
@@ -300,8 +313,9 @@ let CLIKE_definicijaJezika = [
 	[  SABLON_KOMENTAR_BLOK       ,  "komentar_blok"                 ]  ,  // /* ---- komentar ---- */
 	[  SABLON_KOMENTAR_LINIJSKI   ,  "komentar_linijski"             ]  ,  // // komentar
 	[  SABLON_PRETPROCESOR        ,  "pretprocesorska_direktiva"     ]  ,  // #define 3.14159265359 PI
-	[  SABLON_NISKA_APOSTROFI     ,  "niska_apostrofi"               ]  ,  // 'niska niska niska'
-	[  SABLON_NISKA_NAVODNICI     ,  "niska_navodnici"               ]  ,  // "niska niska niska"
+	[  SABLON_NISKA_UNIVERZALNI   ,  "niska"                         ]  ,  // 'niska niska niska'
+	//[  SABLON_NISKA_APOSTROFI     ,  "niska_apostrofi"               ]  ,  // 'niska niska niska'
+	//[  SABLON_NISKA_NAVODNICI     ,  "niska_navodnici"               ]  ,  // "niska niska niska"
 	[  SABLON_V_ZAGRADA_OTV       ,  "blok_koda_otvarajuca_zagrada"  ]  ,  // {
 	[  SABLON_V_ZAGRADA_ZAT       ,  "blok_koda_zatvarajuca_zagrada" ]  ,  // {
 	[  SABLON_ZAGRADA_OTV         ,  "zagrada_obicna_otvorena"       ]  ,  // (
@@ -665,10 +679,12 @@ let Assembler_rezervisaneReci = [
 /* -------------------------------------------------------------------------- */
 
 let RegEx_definicijaJezika = [
+	[  SABLON_REGEX_POCETAK                         ,  "regex_pocetak"        ]  ,
+	[  SABLON_REGEX_KRAJ                            ,  "regex_kraj"           ]  ,
+	[  /(\\.{1})/g                                  ,  "regex_escape"         ]  ,
 	[  /(\{.*?\}|\+|\?|\*)/g                        ,  "regex_kvantifikator"  ]  ,
 	[  /(\\w|\\W|\\b|\\B\\c|\\C|\\s|\\S|\\d|\\D)/g  ,  "regex_klase_znakova"  ]  ,
 	[  /(\||\[|\]|\(|\))/g                          ,  "operator"             ]  ,
-	[  /(\\.{1})/g                                  ,  "regex_escape"         ]  ,
 ];
 
 let RegEx_rezervisaneReci = [

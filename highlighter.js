@@ -58,7 +58,7 @@ function obradaHTMLKodaRadni(lista) {
 function obradaHTMLKodaDodatni(lista) {
 	rastavljanjeOtvarajucihTagova(lista, /(\=\'[A-Za-z\d\.\:\/\-\_ ]+\')/g , "atribut_vrednost" , "tag_otvarajuci"   , "tag_otvarajuci");
 	rastavljanjeOtvarajucihTagova(lista, /(\=)/g                           , "atribut_dodela"   , "atribut_vrednost" , "atribut_vrednost");
-	rastavljanjeOtvarajucihTagova(lista, /([\s]+[A-Za-z]*)/g               , "atribut_naziv"    , "tag_otvarajuci"   , "tag_otvarajuci");
+	rastavljanjeOtvarajucihTagova(lista, /([\s]+[A-Za-z\(\)]*)/g           , "atribut_naziv"    , "tag_otvarajuci"   , "tag_otvarajuci");
 }
 
 function obradaCSSKoda(tekst, polje) {

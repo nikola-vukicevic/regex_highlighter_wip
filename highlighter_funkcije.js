@@ -1,25 +1,18 @@
-/* -------------------------------------------------------------------------- */
-// Copyright (c) 2021. Nikola Vukićević
-/* -------------------------------------------------------------------------- */
-
-function formatiranjeListe(lista, rezim) {
-	let s       = "";
-	let granica = lista.length - 1;
-
-	while(lista[granica][2] == "white_space" || lista[granica][0] == "") granica--;
-
-	for(let i = 0; i <= granica; i++) {
+function formatiranjeHTMLa(lista, rezim) {
+	let s =  ""
+	for(let i = 0; i < lista.length; i++) {
 		
 		if(lista[i][0] == "") continue;
-
+		
+		let tekst = lista[i][0].replace("<", "&lt;").replace(">", "&gt;");
+		let klasa = lista[i][2];
+		
 		if(rezim == "html") {
-			s += `<span class='token ${lista[i][2]}' title='${lista[i][2]}'>${lista[i][0]}</span>`
+			s += `<span class='token ${klasa}' title='${klasa}'>${tekst}</span>`;
 			continue;
 		}
-
 		if(rezim == "tech") {
-			s += `[${lista[i][0]}] - ${lista[i][2]}\n`;
-			s += `-------------------------------------\n`;
+			s += `${tekst}\n--------------------------------------------------\n`;
 			continue;
 		}
 	}
@@ -27,34 +20,99 @@ function formatiranjeListe(lista, rezim) {
 	return s;
 }
 
-function rastavljanje(tekst, regex) {
-	return tekst.split(regex);
-}
-
-function proveraListe(lista, regex, token) {
+function pripremaListe(lista) {
 	for(let i = 0; i < lista.length; i++) {
-		if(lista[i].match(regex)) {
-			lista.splice( i, 1, [ lista[i], true,  token ] );
-		}
-		else {
-			lista.splice( i, 1, [ lista[i], false, "tekst" ] );
-		}
+		lista[i] = [  lista[i]  ,  false  ,  "tekst"  ,  false  ];
 	}
 }
 
-function proveraTokena(lista, regexSplit, regexProvera, token) {
-	for(let i = 0; i < lista.length; i++) {
-		if(lista[i][1] == false) {
-			
-			let novaLista = rastavljanje(lista[i][0], regexSplit);
-			
-			proveraListe(novaLista, regexProvera, token);
-			
-			for(let j = 0; j < novaLista.length; j++) {
-				lista.splice(i + j, (j == 0)? 1 : 0, novaLista[j]);
+function utiskivanjeTokenPojedinacni(regex, token, boolLexer, boolParser, lista) {
+	lista.forEach(e => {
+		if(e[1] == false && e[0].match(regex)) {
+			e[1] = boolLexer;
+			e[2] = token;
+			e[3] = boolParser;
+		}
+	});
+}
+
+function utiskivanjeTokena(listaRegexa, listaTokena) {
+	listaRegexa.forEach(e => {
+		utiskivanjeTokenPojedinacni(e[0], e[1], e[2], e[3], listaTokena);
+	});
+}
+
+function obradaPrepoznatogTokena(listaTokenaRed, stek, listaParserRed) {
+	
+	// Prepravaljanje trenutnog tokena - indeks 3
+	
+	if(listaParserRed[3] === true) {
+		listaTokenaRed[2] = listaParserRed[6]; // Token za prepravaljanje - Indeks 6
+	}
+
+	// Da li se dodaje novi kontekst na stek? - Indeks 1
+
+	if(listaParserRed[1] === true ) {
+		stek.push(listaParserRed[5])  // Novi kontekst- Indeks 5
+		return;                       // Nema dalje ako se dodaje
+	}                                 // noci kontekst na stek
+
+	// Da li se skida kontekst sa steka? - Indeks 2
+
+	if(listaParserRed[2] > 0) {
+		if(listaParserRed[2] > 1000) {
+			while(stek.length > 1) {
+				stek.pop();
+			}
+		}
+		else {
+			let p = listaParserRed[2];
+			while(p > 0) {
+				stek.pop();
+				p--;
+			}			
+		}	
+                     // Nema dalje ako se skida
+		return;      // kontekst sa steka
+	}
+}
+
+function parserTokenPojedinacni(listaTokenaRed, stek, listaParserPredata, specijalneListe) {
+	let kontekst = stek[stek.length - 1];
+
+	if(listaParserPredata.length > 0) {
+		let listaParser = listaParserPredata[kontekst];
+
+		for(let i = 0; i < listaParser.length; i++) {
+			if(listaTokenaRed[3] === true) continue;			
+
+			if (listaTokenaRed[0].match(listaParser[i][0])) {
+				obradaPrepoznatogTokena(listaTokenaRed, stek, listaParser[i]);
+				return;
 			}
 		}
 	}
+
+	if(specijalneListe.length > 0) {
+		let listeSpecijalnihTokena = specijalneListe[kontekst];
+			
+		listeSpecijalnihTokena.forEach(specLista => {
+			let rez = proveraSpecijalnihTokena(listaTokenaRed, specLista[0], specLista[1]);
+			if(rez && specLista[2] != -1) {
+				stek.push(specLista[2]);
+			}
+		});
+	}
+	
+}
+
+function proveraSpecijalnihTokena(tokenRed, listaSpec, oznaka) {
+	if(binarnaPretraga(tokenRed[0], listaSpec)) {
+		tokenRed[2] = oznaka;
+		return true;
+	}
+	
+	return false;
 }
 
 function binarnaPretraga(element, niz) {
@@ -80,56 +138,23 @@ function binarnaPretraga(element, niz) {
 	return false;
 }
 
-function prepravljanjeTokena(lista, nizSpecijalnih, token) {
-	for(let i = 0; i < lista.length; i++) {
-		
-		if(lista[i][1] == true) continue;
-		if(lista[i][0] == "")   continue;
+function parser(listaParser, listaTokena, specijalneListe) {
+	let stek = [  0  ];
 
-		//if(nizSpecijalnih.includes(lista[i][0])) {
-		if(binarnaPretraga(lista[i][0], nizSpecijalnih)) {
-			lista[i][1] = true;
-			lista[i][2] = token;
-		}
+	for(let i = 0; i < listaTokena.length; i++)	{
+		parserTokenPojedinacni(listaTokena[i], stek, listaParser, specijalneListe);
 	}
 }
 
-function proveraListeTokena(listaTokena, listaDefinicija) {
-	listaDefinicija.forEach(e => {
-		let regex = (e.length === 2)? e[0] : e[2];
-		proveraTokena(listaTokena, e[0], regex, e[1]);
-	});
-}
+function obradaKoda(tekst, definicija_jezika, poljeZaIspis, format) {
+	let lista = tekst.split(definicija_jezika.regexRastavljanje);
+	pripremaListe(lista);
+	utiskivanjeTokena(definicija_jezika.listaRegex, lista);
+	
+	if(PARSER === true) {
+		parser(definicija_jezika.listaParser, lista, definicija_jezika.listeSpec);
 
-function proveraListeZaTagove(lista, regex, token, tokenDefault) {
-	for(let i = 0; i < lista.length; i++) {
-		if(lista[i].match(regex)) {
-			lista.splice( i, 1, [ lista[i], true, token ] );
-		}
-		else {
-			lista.splice( i, 1, [ lista[i], true, tokenDefault ] );
-		}
 	}
+	
+	poljeZaIspis.innerHTML = formatiranjeHTMLa(lista, format);
 }
-
-function rastavljanjeOtvarajucihTagova(lista, regex, token, tokenDefault, provera) {
-	for(let i = 0; i < lista.length; i++) {
-		if(lista[i][2] == provera) {
-
-			let novaLista = rastavljanje(lista[i][0], regex);
-			
-			proveraListeZaTagove(novaLista, regex, token, tokenDefault);
-			
-			for(let j = 0; j < novaLista.length; j++) {
-				lista.splice(i + j, (j == 0)? 1 : 0, novaLista[j]);
-			}
-		}
-	}
-}
-
-function inicijalizacijaListeTokena(tekst) {
-	return [
-		[ tekst, false, "tekst" ]
-	];
-}
-

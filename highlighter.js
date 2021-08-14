@@ -1,325 +1,15 @@
-/* -------------------------------------------------------------------------- */
-// Copyright (c) 2021. Nikola Vukićević
-/* -------------------------------------------------------------------------- */
-
 let poljeZaIspis = document.getElementById("polje_ispis");
 let listaTokena  = null;
 let radioDugme   = 1;
 let brojDugmica  = 14;
 let DEBUG        = false;
+let PARSER       = true;
+let REZIM_ISPISA = "html";
 document.addEventListener("keydown", prepoznavanjeTastera);
 
-/* ----- Prave stvari su u datoteci highlighter_funkcije.js ----- */
-
-function obradaTXTKoda(tekst, polje) {
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst.trim());
-	
-	//proveraListe(listaTokena, "" , "tekst");
-	//prepravljanjeTokena(listaTokena, CSS_htmlTagovi,  "html_tag");
-	//prepravljanjeTokena(listaTokena, CSS_pseudoklase, "pseudoklasa");
-	//prepravljanjeTokena(listaTokena, CSS_jedinice,    "jedinica");
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaHTMLKoda(tekst, polje) {
-	
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-
-	obradaHTMLKodaRadni(listaTokena);
-	obradaHTMLKodaDodatni(listaTokena);
-	
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaHTMLKodaRadni(lista) {
-	proveraListeTokena(lista,  HTML_definicijaJezika);
-}
-
-function obradaHTMLKodaDodatni(lista) {
-	rastavljanjeOtvarajucihTagova(lista, /(\=\'[A-Za-z\d\.\:\/\-\_ ]+\')/g , "atribut_vrednost" , "tag_otvarajuci"   , "tag_otvarajuci");
-	rastavljanjeOtvarajucihTagova(lista, /(\=)/g                           , "atribut_dodela"   , "atribut_vrednost" , "atribut_vrednost");
-	rastavljanjeOtvarajucihTagova(lista, /([\s]+[A-Za-z\(\)]*)/g           , "atribut_naziv"    , "tag_otvarajuci"   , "tag_otvarajuci");
-}
-
-function obradaCSSKoda(tekst, polje) {
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-
-	proveraListeTokena(listaTokena,  CSS_definicijaJezika);
-	prepravljanjeTokena(listaTokena, CSS_htmlTagovi,  "html_tag");
-	prepravljanjeTokena(listaTokena, CSS_pseudoklase, "pseudoklasa");
-	prepravljanjeTokena(listaTokena, CSS_jedinice,    "jedinica");
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaJavaScriptKoda(tekst, polje) {
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-	
-	proveraListeTokena(listaTokena,  JS_definicijaJezika);
-	prepravljanjeTokena(listaTokena, JS_RezervisaneReci,  "rezervisana_rec");
-	prepravljanjeTokena(listaTokena, JS_SpecijalniTokeni, "specijalni_token");
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaCKoda(tekst, polje) {
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-	
-	proveraListeTokena(listaTokena,  CLIKE_definicijaJezika);
-	prepravljanjeTokena(listaTokena, CLIKE_RezervisaneReci,  "rezervisana_rec");
-	prepravljanjeTokena(listaTokena, CLIKE_SpecijalniTokeni, "specijalni_token");
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaCPPKoda(tekst, polje) {
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-	
-	proveraListeTokena(listaTokena,  CLIKE_definicijaJezika);
-	prepravljanjeTokena(listaTokena, CLIKE_RezervisaneReci,  "rezervisana_rec");
-	prepravljanjeTokena(listaTokena, CLIKE_SpecijalniTokeni, "specijalni_token");
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaCSharpKoda(tekst, polje) {
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-	
-	proveraListeTokena(listaTokena,  CLIKE_definicijaJezika);
-	prepravljanjeTokena(listaTokena, CLIKE_RezervisaneReci,  "rezervisana_rec");
-	prepravljanjeTokena(listaTokena, CLIKE_SpecijalniTokeni, "specijalni_token");
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaJavaKoda(tekst, polje) {
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-	
-	proveraListeTokena(listaTokena,  CLIKE_definicijaJezika);
-	prepravljanjeTokena(listaTokena, CLIKE_RezervisaneReci,  "rezervisana_rec");
-	prepravljanjeTokena(listaTokena, CLIKE_SpecijalniTokeni, "specijalni_token");
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaSQLKoda(tekst, polje) {
-	
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-
-	proveraListeTokena(listaTokena,  SQL_definicijaJezika);
-	prepravljanjeTokena(listaTokena, SQL_rezervisaneReci,    "rezervisana_rec");
-	prepravljanjeTokena(listaTokena, SQL_tipoviPromenljivih, "tip_promenljive");
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaPythonKoda(tekst, polje) {
-	
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-
-	proveraListeTokena(listaTokena,  Python_definicijaJezika);
-	prepravljanjeTokena(listaTokena, Python_rezervisaneReci,  "rezervisana_rec");
-	prepravljanjeTokena(listaTokena, Python_specijalniTokeni, "specijalni_token");
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaPHPKoda(tekst, polje) {
-	
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-
-	obradaPHPKodaRadni(listaTokena);
-	obradaHTMLKodaDodatni(listaTokena);
-
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaPHPKodaRadni(lista) {
-	proveraListeTokena(lista,  PHP_definicijaJezika);
-	prepravljanjeTokena(lista, PHP_rezervisaneReci,  "rezervisana_rec");
-	prepravljanjeTokena(lista, PHP_specijalniTokeni, "specijalni_token");
-}
-
-function obradaJSONKoda(tekst, polje) {
-	
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-	//console.log(listaTokena)
-	proveraListeTokena(listaTokena,  JSON_definicijaJezika);
-		
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaAssemblerKoda(tekst, polje) {
-	
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-	//console.log(listaTokena)
-	proveraListeTokena(listaTokena,  Assembler_definicijaJezika);
-	prepravljanjeTokena(listaTokena, Assembler_rezervisaneReci,  "rezervisana_rec");
-		
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaRegExKoda(tekst, polje) {
-	
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-	//console.log(listaTokena)
-	proveraListeTokena(listaTokena,  RegEx_definicijaJezika);
-			
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
-
-function obradaMarkupKoda(tekst, polje) {
-	
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
-
-	listaTokena = inicijalizacijaListeTokena(tekst);
-	//console.log(listaTokena)
-	proveraListeTokena(listaTokena,  Markup_definicijaJezika);
-			
-	/* ----- telemetrija ------ */
-	let t2    = performance.now();
-	let odziv = (t2 - t1) + "ms";
-	if(DEBUG) console.log(odziv);
-
-	//console.log(listaTokena)
-
-	polje.innerHTML = formatiranjeListe(listaTokena, "html");
-}
+/* -------------------------------------------------------------------------- */
+// Obrada:
+/* -------------------------------------------------------------------------- */
 
 function radioKlik(n) {
 	
@@ -331,21 +21,21 @@ function radioKlik(n) {
 	}
 	
 	switch(n) {
-		case 1  : obradaHTMLKoda(tekstHTML,           poljeZaIspis); break;
-		case 2  : obradaCSSKoda(tekstCSS,             poljeZaIspis); break;
-		case 3  : obradaJavaScriptKoda(tekstJS,       poljeZaIspis); break;
-		case 4  : obradaCKoda(tekstC,                 poljeZaIspis); break;
-		case 5  : obradaCPPKoda(tekstCPP,             poljeZaIspis); break;
-		case 6  : obradaCSharpKoda(tekstCSharp,       poljeZaIspis); break;
-		case 7  : obradaJavaKoda(tekstJava,           poljeZaIspis); break;
-		case 8  : obradaSQLKoda(tekstSQL,             poljeZaIspis); break;
-		case 9  : obradaPythonKoda(tekstPython,       poljeZaIspis); break;
-		case 10 : obradaPHPKoda(tekstPHP,             poljeZaIspis); break;
-		case 11 : obradaJSONKoda(tekstJSON,           poljeZaIspis); break;
-		case 12 : obradaAssemblerKoda(tekstAssembler, poljeZaIspis); break;
-		case 13 : obradaMarkupKoda(tekstMarkup,       poljeZaIspis); break;
-		case 14 : obradaRegExKoda(tekstRegex,         poljeZaIspis); break;
-		default : obradaCSSKoda(tekstCSS,             poljeZaIspis); break;
+		case 1  : obradaKoda(tekstHTML,      HTML_definicijaJezika,       poljeZaIspis, REZIM_ISPISA); break;
+		case 2  : obradaKoda(tekstCSS,       CSS_definicijaJezika,        poljeZaIspis, REZIM_ISPISA); break;
+		case 3  : obradaKoda(tekstJS,        JavaScript_definicijaJezika, poljeZaIspis, REZIM_ISPISA); break;
+		case 4  : obradaKoda(tekstC,         C_definicijaJezika,          poljeZaIspis, REZIM_ISPISA); break;
+		case 5  : obradaKoda(tekstCPP,       CPP_definicijaJezika,        poljeZaIspis, REZIM_ISPISA); break;
+		case 6  : obradaKoda(tekstCSharp,    C_Sharp_definicijaJezika,    poljeZaIspis, REZIM_ISPISA); break;
+		case 7  : obradaKoda(tekstJava,      Java_definicijaJezika,       poljeZaIspis, REZIM_ISPISA); break;
+		case 8  : obradaKoda(tekstSQL,       SQL_definicijaJezika,        poljeZaIspis, REZIM_ISPISA); break;
+		case 9  : obradaKoda(tekstPython,    Python_definicijaJezika,     poljeZaIspis, REZIM_ISPISA); break;
+		case 10 : obradaKoda(tekstPHP,       PHP_definicijaJezika,        poljeZaIspis, REZIM_ISPISA); break;
+		case 11 : obradaKoda(tekstJSON,      JSON_definicijaJezika,       poljeZaIspis, REZIM_ISPISA); break;
+		case 12 : obradaKoda(tekstAssembler, Assembler_definicijaJezika,  poljeZaIspis, REZIM_ISPISA); break;
+		case 13 : obradaKoda(tekstMarkup,    Markup_definicijaJezika,     poljeZaIspis, REZIM_ISPISA); break;
+		case 14 : obradaKoda(tekstRegex,     RegEx_definicijaJezika,      poljeZaIspis, REZIM_ISPISA); break;
+		default : obradaKoda(tekstCSS,       CSS_definicijaJezika,        poljeZaIspis, REZIM_ISPISA); break;
 	}
 }
 
@@ -364,4 +54,18 @@ function prepoznavanjeTastera(event) {
 	}
 }
 
-obradaHTMLKoda(tekstHTML, poljeZaIspis);
+/* -------------------------------------------------------------------------- */
+let t1 = performance.now();
+/* -------------------------------------------------------------------------- */
+
+/*
+obradaKoda(tekst, HTML_definicijaJezika, poljeIspis, "html");
+obradaKoda(tekst, CLIKE_definicijaJezika, poljeIspis, "html");
+//*/
+//obradaKoda(tekst, CSS_definicijaJezika, poljeIspis, "html");
+
+/* -------------------------------------------------------------------------- */
+let t2    = performance.now();
+let odziv = t2 - t1 + "ms";
+console.log(`Vreme obrade: ${odziv}`);
+/* -------------------------------------------------------------------------- */

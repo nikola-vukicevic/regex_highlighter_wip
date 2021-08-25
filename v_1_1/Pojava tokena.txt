@@ -1,0 +1,11 @@
+Pojava tokena
+
+
+[
+	menja_kontekst (ili, ne menja)  ,
+	ako ne menja, onda se proverava poklapanje
+	poklapanje je  okviru konteksta
+,                   ]
+
+//    0            1         2         3       4        5
+[  /&lt;{1}/g  ,  true  ,  false  ,  false  ,  1  ,  "token"  ]

@@ -1,6 +1,10 @@
 # Syntax   highlighter
 Syntax highlighter implementiran preko regularnih izraza
 
+## Demo
+
+https://www.codeblog.rs/primeri/regex_highlighter/
+
 Posle kontekstnog parsera specijalizovanog za CSS, na red dođe i univerzalni parser koji ne koristi stek/kontekst(e), već regularne izraze.
 
 Za sada WIP, ali, već je prilično funkcionalan ....
@@ -19,10 +23,7 @@ Prepravljen celokupan kod.
 
 Sada postoji primitivan parser, koji vodi računa o kontekstu (čime se rešava problem, pre svega, komentara unutar niski i niski unutar komentara).
 
-### v1.0.1
+### v1.0
 
-Implementirana prosta binarna pretraga tagova (za sada nema potrebe za hash mapom).
+Syntax highlighter implementiran preko regularnih izraza
 
-## Demo
-
-https://www.codeblog.rs/primeri/regex_highlighter/

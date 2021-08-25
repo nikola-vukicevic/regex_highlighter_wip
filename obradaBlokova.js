@@ -4,20 +4,20 @@
 
 let mapaKlasa = new Map();
 
-mapaKlasa.set("language-text",       TXT_definicijaJezika);
-mapaKlasa.set("language-assembler",  Assembler_definicijaJezika);
-mapaKlasa.set("language-clike",      CLIKE_definicijaJezika);
-mapaKlasa.set("language-css",        CSS_definicijaJezika);
-mapaKlasa.set("language-html",       HTML_definicijaJezika);
-mapaKlasa.set("language-java",       Java_definicijaJezika);
-mapaKlasa.set("language-javascript", JavaScript_definicijaJezika);
-mapaKlasa.set("language-json",       JSON_definicijaJezika);
-mapaKlasa.set("language-markup",     Markup_definicijaJezika);
-mapaKlasa.set("language-php",        PHP_definicijaJezika);
-mapaKlasa.set("language-python",     Python_definicijaJezika);
-mapaKlasa.set("language-regex",      RegEx_definicijaJezika);
-mapaKlasa.set("language-sql",        SQL_definicijaJezika);
-mapaKlasa.set("language-xml",        XML_definicijaJezika);
+mapaKlasa.set("language-text",       TXT_definicijaJezika)
+         .set("language-assembler",  Assembler_definicijaJezika)
+         .set("language-clike",      CLIKE_definicijaJezika)
+         .set("language-css",        CSS_definicijaJezika)
+         .set("language-html",       HTML_definicijaJezika)
+         .set("language-java",       Java_definicijaJezika)
+         .set("language-javascript", JavaScript_definicijaJezika)
+         .set("language-json",       JSON_definicijaJezika)
+         .set("language-markup",     Markup_definicijaJezika)
+         .set("language-php",        PHP_definicijaJezika)
+         .set("language-python",     Python_definicijaJezika)
+         .set("language-regex",      RegEx_definicijaJezika)
+         .set("language-sql",        SQL_definicijaJezika)
+         .set("language-xml",        XML_definicijaJezika)
 
 let spisakKlasa = [
 	"language-text",
@@ -61,12 +61,7 @@ function obradaBlokovaJedneKlase(klasa) {
 }
 
 function obradaPojedinacnogBloka(blok, definicijaJezika) {
-	
-	let tekst = blok.innerText.trim() + "\n";
-
-	tekst = tekst.replace(/</g, "&lt;");
-	tekst = tekst.replace(/>/g, "&gt;");
-
+	let tekst = blok.innerText;
 	obradaKoda(tekst, definicijaJezika, blok, REZIM_ISPISA);
 }
 

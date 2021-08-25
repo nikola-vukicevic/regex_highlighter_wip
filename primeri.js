@@ -1,8 +1,8 @@
 /* -------------------------------------------------------------------------- */
+//
 /* Copyright (c) 2021. Nikola Vukićević                                       */
+//
 /* -------------------------------------------------------------------------- */
-
-
 
 /* -------------------------------------------------------------------------- */
 // Primer - CSS
@@ -13,9 +13,7 @@ let tekstCSS = `/* ---- CSS Syntax Highlighter Demo ---- */
 @import 'config.css';
 
 /*
-	Unesite Vaš CSS kod u levo tekstualno polje
-	(koje je interaktivno), a u desnom će biti
-	prikazan rezultat tokenizacije) ....
+	Blok komentar u više redova
 */
 
 // Linijski komentar
@@ -33,7 +31,7 @@ let tekstCSS = `/* ---- CSS Syntax Highlighter Demo ---- */
 #ajDi_1 {
 	display:    flex; // #ddf? --- */ Hex
 	color:      #edd;
-	box-shadow: 0px 0px 16px 1px rgba(0, 0, 0, 0.03);
+	box-shadow: 0 px 0px 16px 1px rgba(0, 0, 0, 0.03);
 }
 
 .klasa_1,
@@ -66,25 +64,33 @@ GRESKA! Ne sme se bežati sa časova!
 let tekstJS = `/*
 	JavaScript Syntax Highlighter Demo
 */
-
-// C, C++, C#, Java - coming soon ....
-
-function genNiz(niz, g, e) {
-	for(let i = 0; i &gt; g; i++) {
-		niz.push(e);
-	}
+		
+const narucivanjePromise = podaci => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			if(podaci.uslov) {
+				console.log(podaci.poruka);
+				resolve({
+					uslov: PROVERA_PROVERA_DELOVA,
+					poruka: "Delovi su prošli proveru"
+				});
+			}
+			else {
+				reject("Greška: Naručeni delovi NISU DOSTAVLJENI");
+			}
+		}, INTERVAL_NARUCIVANJE);
+	});
 }
-
-function proveraNiza(niz, rec) {
-	for(let i = 0; i &lt; rec.length; i++) {
-		ind = rec.charCodeAt(i);
-		niz[ind]++;
-		if(niz[ind] &gt; 1) {
-			return false;
-		}
-	}
-
-	return true;
+		
+async function PokretanjeAsyncAwait() {
+	
+	let podaci = {
+		uslov: PROVERA_NARUCIVANJE,
+		poruka: "Naručeni delovi su dostavljeni ...."
+	};
+	
+	let narucivanje = await narucivanjePromise(podaci);
+	console.log(narucivanje);
 }
 
 function daLiSuSviRazliciti(rec) {
@@ -101,41 +107,41 @@ console.log(daLiSuSviRazliciti("Ana"));
 // Primer - HTML
 /* -------------------------------------------------------------------------- */
 
-let tekstHTML = `&lt;!-- HTML Syntax Highlighter Demo --&gt;
+let tekstHTML = `<!-- HTML Syntax Highlighter Demo -->
 
-&lt;!DOCTYPE html&gt;
+<!DOCTYPE html>
 
-&lt;html&gt;
-	&lt;head&gt;
-		&lt;meta charset='utf-8'/&gt;
-		&lt;title&gt;Naša prva stranica&lt;/title&gt;
-		&lt;link rel='stylesheet' href='stil.css'/&gt;
-	&lt;/head&gt;
+<html>
+	<head>
+		<meta charset='utf-8'/>
+		<title>Probna stranica</title>
+		<link rel='stylesheet' href='stil.css'/>
+	</head>
 
-	&lt;body&gt;
-		&lt;h1&gt;Ovo je glavni naslov&lt;/h1&gt;
+	<body>
+		<h1>Glavni naslov</h1>
 		
-		&lt;h2&gt;Podnaslov 1&lt;/h2&gt;
+		<h2>Podnaslov 1</h2>
 		
-		&lt;p&gt;
+		<p>
 			Tekst prvog pasusa.
-		&lt;/p&gt;
+		</p>
 
-		&lt;h2&gt;Podnaslov 2&lt;/h2&gt;
+		<h2>Podnaslov 2</h2>
 
-		&lt;p&gt;
+		<p>
 			Tekst drugog pasusa.
-		&lt;/p&gt;
+		</p>
 
-		&lt;p&gt;
+		<p>
 			Dobar dan!
-		&lt;/p&gt;
+		</p>
 
-		&lt;a href='https://www.codeblog.rs'&gt;Ovo je link&lt;/a&gt;
+		<a href='https://www.codeblog.rs'>Ovo je link</a>
 
-		&lt;img src='slika_01.png' alt='Slika 1' title='Slika 1'/&gt;
-	&lt;/body&gt;
-&lt;/html&gt;
+		<img src='slika_01.png' alt='Slika 1' title='Slika 1'/>
+	</body>
+</html>
 `;
 
 /* -------------------------------------------------------------------------- */
@@ -144,25 +150,28 @@ let tekstHTML = `&lt;!-- HTML Syntax Highlighter Demo --&gt;
 
 let tekstC = `/* ----- C Syntax Highlighter Demo ----- */
 
-#include&lt;stdio.h&gt;
-#include&lt;stdlib.h&gt;
+#include<stdio.h>
+#include<stdlib.h>
 
 void main()
 {
 	int i, n;
+	int a = 12;
+	double d = 12.54;
+	double f = .54;
 	FILE *f;
-	f = fopen("rezultat.txt", "w");
+	f = fopen("rezultat void main int .txt", "w");
 	
 	if(f == NULL)
 	{
-		printf("Greška!\\n");
+		printf("\\"Greška!\\"\\n");
 		return;
 	}
 	
 	printf("N = ");
 	scanf("%d", &n);
 	
-	for (i = 0; i &lt;= n; i++)
+	for (i = 0; i <= n; i++)
 	{
 		fprintf(f, "%d\\n", rand());
 	}
@@ -180,11 +189,11 @@ let tekstCPP = `/*
 	C++ Syntax Highlighter Demo
 */
 
-#include&lt;iostream&gt;
+#include<iostream>
 
 using namespace std;
 
-struct Datum {
+struct Datum_12 {
 	int godina, mesec, dan;
 };
 
@@ -201,9 +210,9 @@ class Osoba
 	
 	Osoba(string ime, string prezime, Datum datumRodjenja)
 	{
-		this-&gt;ime           = ime;
-		this-&gt;prezime       = prezime;
-		this-&gt;datumRodjenja = datumRodjenja;
+		this->ime           = ime;
+		this->prezime       = prezime;
+		this->datumRodjenja = datumRodjenja;
 		racunanjeStarosti();
 	}
 	
@@ -212,19 +221,19 @@ class Osoba
 		time_t d     = time(NULL);
 		tm*    datum = localtime(&d);
 		
-		int godina   = datum-&gt;tm_year + 1900;
-		int mesec    = datum-&gt;tm_mon  + 1;
-		int dan      = datum-&gt;tm_mday;
+		int godina   = datum->tm_year + 1900;
+		int mesec    = datum->tm_mon  + 1;
+		int dan      = datum->tm_mday;
 		
 		_starost = godina - datumRodjenja.godina;
 		
-		if(mesec &lt; datumRodjenja.mesec)
+		if(mesec < datumRodjenja.mesec)
 		{
 			_starost--;
 		}
 
 		if(mesec == datumRodjenja.mesec &&
-		   dan   &lt;  datumRodjenja.dan)
+		   dan   <  datumRodjenja.dan)
 		{
 			_starost--;
 		}
@@ -264,7 +273,7 @@ public class Pravougaonik
 		P = a * b;
 	}
 	
-	public void KonzolniIspis()
+	public void KonzolniIspis_12()
 	{
 		Console.WriteLine("-Stranica a: " + this.a.ToString());
 		Console.WriteLine("-Stranica b: " + this.b.ToString());
@@ -300,7 +309,7 @@ public class Pravougaonik {
 		P = a * b;
 	}
 	
-	public void KonzolniIspis()	{
+	public void KonzolniIspis_12()	{
 		System.out.printf("-Stranica a: %f", this.a);
 		System.out.printf("-Stranica b: %f", this.b);
 		System.out.printf("-Obim: %f",       this.O);
@@ -317,7 +326,7 @@ let tekstSQL = `-- SQL Syntax Highlighter Demo
 
 USE prodaja;
 
-CREATE TABLE prodavci
+CREATE TABLE prodavci_12
 (
 	id int NOT NULL AUTO_INCREMENT PRIMARY KEY, 
 	ime varchar(255) NOT NULL,
@@ -351,12 +360,12 @@ VALUES
 
 let tekstPython = `# Python Syntax Highlighter Demo
 
-def idiosync_parse():
-	s      = ucitavanje
-	redovi = ucitavanje.split('\\n') 
-	tokeni = []
-	s      = ""
-	parse  = True
+def idiosync_parse_12():
+	s        = ucitavanje
+	redovi   = ucitavanje.split('\\n') 
+	tokeni   = []
+	s        = ""
+	parse_12 = True
 
 	for r in redovi:
 		if r == "\\r" or r == "":
@@ -384,44 +393,50 @@ return s
 // Primer - PHP
 /* -------------------------------------------------------------------------- */
 
-let tekstPHP = `/* ----- PHP Syntax Highlighter ----- */
-
-&lt;?php
+let tekstPHP = `<?php
+	/* ----- PHP Syntax Highlighter ----- */
 	require_once('obrada_podataka');
 	if(!isset($_GET['p'])) {
 		header("location: greska.php");
 		exit();
 	}
 
-	class Osoba	{
+	$a = 12.54;
+	$b = 12;
+	$c = .54;
+
+	class Osoba_12	{
 		public $ime, $prezime, $adresa;
 
 		function __construct($ime, $prezime, $datum_rodjenja) {
-			$this-&gt;ime     = $ime;
-			$this-&gt;prezime = $prezime;
-			$this-&gt;adresa  = $adresa;
+			$this->ime     = $ime;
+			$this->prezime = $prezime;
+			$this->adresa  = $adresa;
+			$this->visina  = 0.14;
 		}
 
 		function formatiranje_podataka() {
-			return $ime . " " . $prezime . ", " . $adresa;
+			return $ime . "\\" razmak " . $prezime . ", " . $adresa;
 		}
 
 		function ispis_podataka() {
-			echo formatiranje_podataka() . "&lt;br&gt;";
+			echo formatiranje_podataka() . "<br>";
 		}
 	}
-?&gt;
+?>
 
-&lt;!DOCTYPE html&gt;
+<!----- HTML blok u PHP datoteci ----->
 
-&lt;html&gt;
-	&lt;head&gt;
-		&lt;meta charset='utf-8'/&gt;
-		&lt;title&gt;PHP&lt;/title&gt;
-	&lt;/head&gt;
-	&lt;body&gt;
-	&lt;/body&gt;
-&lt;/html&gt;
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset='utf-8'/>
+		<title>PHP</title>
+	</head>
+	<body>
+	</body>
+</html>
 `;
 
 /* -------------------------------------------------------------------------- */
@@ -432,9 +447,9 @@ let tekstJSON = `{
 	"ime"     : "Milan",
 	"prezime" : "Nešić",
 	"adresa"  : {
-					"drzava" : "Srbija"
-					"grad"   : "Beograd"
-					"ulica"  : "Grofa Drakule"
+					"drzava" : "Srbija",
+					"grad"   : "Beograd",
+					"ulica"  : "Grofa Drakule",
 					"broj"   : 41
 				},
 	"email"   : "mixi_79@gmail.com",
@@ -481,28 +496,40 @@ Treci pasus
 /* -------------------------------------------------------------------------- */
 
 let tekstRegex = `
-/(\/\*[\s\S]*?\*\/)/g;
-/(\/\/.*\\n)/g;
-/(\#.*\\n)/g;
-/(\'[\s\S]*?\')/g;
-/(\"[\s\S]*?\")/g;
-/(\`[\s\S]*?\`)/g;
-/(\()/g;
-/(\))/g;
-/(\{)/g;
-/(\})/g;
-/(\[)/g;
-/(\])/g;
-/(\B\#[\dA-Fa-f]{3,6}\b)/g;
-/(\d*\.\d+)/g;
-/(\b\d+)/g;
-/(0x\d+)/g;
-/([ \t\\n]+)/g;
-/(\+\+|\-\-|&gt;\=|&gt;|&lt;\=|&lt;|\=\=|&lt;&lt;|&gt;&gt;|\-&gt;|\&\&|\|\||\=|\+|\-|\*|\/)/g;
-/(&lt;|&gt;|\.|\,|\:|\;)/g;
-/(\-\-.*\\n)/g;
-/(\#.*\\n)/g;
-/(&lt;[\s\S]*?&gt;)/g;
-/(&lt;\/[A-Za-z\d]*&gt;)/g;
-/(\&lt\;\!\-\-.*\-\-\&gt\;)/g;
+/(\\/\\*[\s\S]*?\\*\\/)/g;
+/(\\/\\/.*\\n)/g;
+/(\\#.*\\n)/g;
+/(\\'[\\s\\S]*?\\')/g;
+/(\\"[\\s\\S]*?\\")/g;
+/(\\\`[\\s\\S]*?\\\`)/g;
+/(\\()/g;
+/(\\))/g;
+/(\\{)/g;
+/(\\})/g;
+/(\\[)/g;
+/(\\])/g;
+/(\\B\\#[\\dA-Fa-f]{3,6}\\b)/g;
+/(\\d*\\.\\d+)/g;
+/(\\b\\d+)/g;
+/(0x\\d+)/g;
+/([ \\t\\n]+)/g;
+/(\\+\\+|\\-\\-|\\<\\=|\\>|\\<\\=|\\<|\\=\\=|\\<\\<|\\>\\>|\\-\\>|\\&\\&|\\|\\||\\=|\\+|\\-|\\*|\\/)/g;
+/(\\<|\\>|\\.|\\,|\\:|\\;)/g;
+/(\\-\\-.*\\n)/g;
+/(\\#.*\\n)/g;
+/(\\<[\\s\\S]*?>)/g;
+/(\\<\\/[A-Za-z\\d]*>)/g;
+/(\\<\\!\\-\\-.*\\-\\-\\>)/g;
+`;
+
+/* -------------------------------------------------------------------------- */
+// Primer - TXT
+/* -------------------------------------------------------------------------- */
+
+let tekstTXT = `U tekstualnom obliku tekst je ....
+
+.... ako pređemo u novi red .....
+
+Zapisan!
+
 `;

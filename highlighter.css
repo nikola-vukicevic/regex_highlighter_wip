@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 * {
-	margin:  0;
+	margin: 0;
 	padding: 0;
 }
 
@@ -113,6 +113,7 @@ span {
 	letter-spacing: 0;
 	line-height:    1.3;
 	white-space:    break-spaces;
+	word-break:     break-all;
 	color:          #f2f2f8;
 
 	/* ----- var ----- */
@@ -126,8 +127,10 @@ span {
 	color: #999;
 }
 
+.niska,
 .niska_apostrofi,
-.niska_navodnici {
+.niska_navodnici,
+.niska_backtick {
 	color: #8a3;	
 	color: #ce8;	
 }
@@ -165,6 +168,7 @@ span {
 	color: #bcd;
 }
 
+.et_direktiva,
 .et_direktiva_naziv {
 	color: #faa;
 }
@@ -182,6 +186,7 @@ span {
 .html_tag {
 	color: #8a3;
 	color: #ce8;
+	color: #9cf;
 }
 
 .svojstvo_naziv {
@@ -215,6 +220,7 @@ span {
 	color: #ce8;	
 }
 
+.broj,
 .brojcana_vrednost,
 .decimalna_vrednost,
 .heksadecimalna_vrednost,
@@ -232,6 +238,7 @@ span {
 .pretprocesorska_direktiva {
 	color: #8a3;	
 	color: #ce8;
+	color: #fe7;
 }
 
 .json_separator,
@@ -295,4 +302,20 @@ span {
 	color: #d9f;
 }
 
+.regex {
+	color: #80e0ff;
+}
 
+.regex_pocetak,
+.regex_kraj {
+	color: #fe8;
+}
+
+.tekst_x {
+	color: #c8d;
+	color: #665;
+}
+
+.php_blok {
+	color: #fe7;	
+}

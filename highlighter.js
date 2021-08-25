@@ -1,3 +1,7 @@
+/* -------------------------------------------------------------------------- */
+// Copyright (c) 2021. Nikola Vukićević
+/* -------------------------------------------------------------------------- */
+
 let poljeZaIspis = document.getElementById("polje_ispis");
 let listaTokena  = null;
 let radioDugme   = 1;
@@ -58,14 +62,8 @@ function prepoznavanjeTastera(event) {
 let t1 = performance.now();
 /* -------------------------------------------------------------------------- */
 
-/*
-obradaKoda(tekst, HTML_definicijaJezika, poljeIspis, "html");
-obradaKoda(tekst, CLIKE_definicijaJezika, poljeIspis, "html");
-//*/
-//obradaKoda(tekst, CSS_definicijaJezika, poljeIspis, "html");
+obradaKoda(HTML_definicijaJezika.pomTekst, HTML_definicijaJezika, poljeZaIspis, "html");
 
-/* -------------------------------------------------------------------------- */
-let t2    = performance.now();
-let odziv = t2 - t1 + "ms";
-console.log(`Vreme obrade: ${odziv}`);
-/* -------------------------------------------------------------------------- */
+/* ----- telemetrija ----- */
+vremeObradeIspis(t1, "Glavna funkcija")
+/* ----------------------- */

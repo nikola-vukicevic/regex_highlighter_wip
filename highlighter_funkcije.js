@@ -1,18 +1,239 @@
-function formatiranjeHTMLa(lista, rezim) {
-	let s =  ""
+/* -------------------------------------------------------------------------- */
+//
+// Copyright (c) 2021. Nikola Vukićević
+//
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+// Lekser:
+/* -------------------------------------------------------------------------- */
+
+function daLiJeWhiteSpace(z) {
+	return z == " " || z == "\t" || z == "\n";
+}
+
+function daLiJeCifra(z) {
+	return z[0] >= '0' && z[0] <= '9';
+}
+
+function praznjenjeStringova(str, lista, definicijaJezika) {
+	if(str.s == "") return;
+	
+	if(str.i == 0 || str.i == 2) {
+		lista.push( [ str.s , str.nazivi[str.i] ] );
+		str.s = "";	
+		return;
+	}
+
+	if(str.i == 1) {
+		while(str.s != "") {
+			ubacivanjeSpecToken(str, lista, definicijaJezika);
+		}
+		return;
+	}
+}
+
+function obradaLekserWhiteSpace(z, str, lista, definicijaJezika) {
+	praznjenjeStringova(str, lista, definicijaJezika);
+	lista.push( [ z , "white_space" ] );
+}
+
+function obradaLekserBroj(z, str, lista, definicijaJezika) {
+	if(str.i == 1  || (str.i == 0 && str.s == ""))	{
+		praznjenjeStringova(str, lista, definicijaJezika);
+		str.s += z;
+		str.i = 2;
+		return;
+	}
+
+	if(str.i == 2 || (str.i == 0 && str.s != "")) {
+		str.s += z;
+		return;
+	}
+}
+
+function obradaLekserEscapeSekvenca(z, str, lista, definicijaJezika, i, tekst) {
+	praznjenjeStringova(str, lista, definicijaJezika);
+	
+	if(i < tekst.length - 1)  {
+		lista.push( [ tekst[i] + tekst[i + 1] , "escape_sekvenca" ] );
+		++i;
+	}
+	else {
+		lista.push( [ tekst[i] , "escape_sekvenca" ] );
+	}
+	
+	return i;
+}
+
+function obradaLekserObicanZnak(z, str, lista, definicijaJezika) {
+	if(str.i != 0) praznjenjeStringova(str, lista, definicijaJezika);
+	str.i  = 0;
+	str.s += z;
+}
+
+function ubacivanjeSpecToken(str, lista, definicijaJezika) {
+	let mapa = definicijaJezika.lekserTokeni;
+	let rez  = mapa.get(str.s);
+	
+	if(rez) {
+		lista.push( [ str.s, rez] );
+		str.s = "";
+	}
+	else {
+		rez   = mapa.get(str.s[0]);
+		lista.push( [ str.s[0], rez ] );
+		str.s = str.s.substring(1 , str.s.length);
+	}
+}
+
+function obradaLekserSpecZnak(z, str, lista, definicijaJezika) {
+	if(str.i != 1) praznjenjeStringova(str, lista, definicijaJezika);
+	str.i = 1;
+	
+	if(str.s.length < definicijaJezika.maksDuzinaSpajanje) {
+		str.s += z;
+	}
+	else {
+		ubacivanjeSpecToken(str, lista, definicijaJezika);
+		str.s += z;
+	}
+}
+
+function lekserOpsti(tekst, definicijaJezika) {
+	let lista = [];
+	let str   = {
+		i: 0,
+		s: "",
+		nazivi: [
+			""     , // 0 - običan znak - trba da bude prazan string - zbog parsera
+			""     , // 1 - specijalni znak, klasa se dodeljuje preko mape
+			"broj" , // 2 - broj dobija klasu preko leksera
+		]
+	}
+
+	for(let i = 0; i < tekst.length; i++) {
+	
+		let z = tekst[i];
+
+		if(daLiJeWhiteSpace(z)) {
+			obradaLekserWhiteSpace(z, str, lista, definicijaJezika);
+			continue;
+		}
+
+		if(daLiJeCifra(z)) {
+			obradaLekserBroj(z, str, lista, definicijaJezika);
+			continue;
+		}
+		
+		if(z == "\\") {
+			i = obradaLekserEscapeSekvenca(z, str, lista, definicijaJezika, i, tekst);
+			continue;
+		}
+		
+		let rez = definicijaJezika.lekserTokeni.get(z);
+
+		if(rez != null) {
+			obradaLekserSpecZnak(z, str, lista, definicijaJezika);
+			continue;
+		}
+
+		obradaLekserObicanZnak(z, str, lista, definicijaJezika);
+	}
+
+	praznjenjeStringova(str, lista, definicijaJezika);
+	return lista;
+}
+
+/* -------------------------------------------------------------------------- */
+// Parser:
+/* -------------------------------------------------------------------------- */
+
+function obradaPrepoznatogTokena(token, rez, lista, stek) {
+	
+	if(rez[1] === true ) {
+		stek.pop();
+	}
+
+	if(rez[0] === true) {
+		stek.push(rez[2]);
+	}
+
+	token[1] = rez[3];
+}
+
+function parserOpsti(definicijaJezika, lista) {
+	let stek     = [ 0 ];
+	let kontekst = null;
+	let mapa     = null;
+	let rez      = null;	
+	let klasa    = "";
+	
+	for(let i = 0; i < lista.length; i++) {
+		kontekst     = stek[stek.length- 1];
+		mapa         = definicijaJezika.parserTokeni.get(kontekst);
+		rez          = mapa.get(lista[i][0]);
+		klasaIzmena  = definicijaJezika.parserPrepravaljanje.get(kontekst)[0];
+		klasaNaziv   = definicijaJezika.parserPrepravaljanje.get(kontekst)[1];
+
+		/* ----- Prepoznati token ----- */
+
+		if(rez) {
+			obradaPrepoznatogTokena(lista[i], rez, lista, stek);
+			continue;
+		}
+
+		/* ----- Token iz liste ----- */
+
+		let specLista = definicijaJezika.parserSpecListe.get(kontekst);
+
+		if(specLista) {
+			rez = specLista.get(lista[i][0]);
+
+			if(rez) {
+				lista[i][1] = rez;
+				continue;
+			}
+		}
+
+		/* ----- Token opšteg tipa ----- */
+		
+		if(klasaIzmena === true || lista[i][1] == "") {
+			lista[i][1] = klasaNaziv;
+		}
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+// Pomoćne:
+/* -------------------------------------------------------------------------- */
+
+function formatiranjeIspisListe(lista, rezim) {
+	let s = "";
+	let alt1 = false, alt2 = true;
+
+	if(rezim == "rand"){
+		alt1  = true;
+		rezim = "html"
+	}
+
 	for(let i = 0; i < lista.length; i++) {
 		
 		if(lista[i][0] == "") continue;
 		
-		let tekst = lista[i][0].replace("<", "&lt;").replace(">", "&gt;");
-		let klasa = lista[i][2];
+		let t_0 = lista[i][0]
+		              .replace("<", "&lt;")
+		              .replace(">", "&gt;");
+		let t_1 = lista[i][1];
 		
-		if(rezim == "html") {
-			s += `<span class='token ${klasa}' title='${klasa}'>${tekst}</span>`;
+		if(rezim == "tech") {
+			s += `[ |${t_0}| , ${t_1} ]\n---------------------------------\n`;
 			continue;
 		}
-		if(rezim == "tech") {
-			s += `${tekst}\n--------------------------------------------------\n`;
+
+		if(rezim == "html") {
+			s += `<span class='token ${t_1+((alt1)?(alt2?1:2):"")}' title='${t_1+((alt1)?(alt2?1:2):"")}'>${t_0}</span>`;
+			alt2 = !alt2;
 			continue;
 		}
 	}
@@ -20,141 +241,28 @@ function formatiranjeHTMLa(lista, rezim) {
 	return s;
 }
 
-function pripremaListe(lista) {
-	for(let i = 0; i < lista.length; i++) {
-		lista[i] = [  lista[i]  ,  false  ,  "tekst"  ,  false  ];
-	}
+function vremeObradeIspis(t1, naziv) {
+	let t2 = performance.now();
+	let odziv = t2 - t1 + "ms";
+	console.log(`Vreme obrade - ${naziv}: ${odziv}`);
 }
 
-function utiskivanjeTokenPojedinacni(regex, token, boolLexer, boolParser, lista) {
-	lista.forEach(e => {
-		if(e[1] == false && e[0].match(regex)) {
-			e[1] = boolLexer;
-			e[2] = token;
-			e[3] = boolParser;
-		}
-	});
-}
+/* -------------------------------------------------------------------------- */
+// Obrada ....
+/* -------------------------------------------------------------------------- */
 
-function utiskivanjeTokena(listaRegexa, listaTokena) {
-	listaRegexa.forEach(e => {
-		utiskivanjeTokenPojedinacni(e[0], e[1], e[2], e[3], listaTokena);
-	});
-}
-
-function obradaPrepoznatogTokena(listaTokenaRed, stek, listaParserRed) {
+function obradaKoda(tekst, definicijaJezika, poljeZaIspis, rezim) {
 	
-	// Prepravaljanje trenutnog tokena - indeks 3
-	
-	if(listaParserRed[3] === true) {
-		listaTokenaRed[2] = listaParserRed[6]; // Token za prepravaljanje - Indeks 6
-	}
+	/* ---------------------------------------------------------------------- */
+	let t1 = performance.now();
+	/* ---------------------------------------------------------------------- */
 
-	// Da li se dodaje novi kontekst na stek? - Indeks 1
+	tekst = tekst.trim() + "\n";
+	let listaTokena = definicijaJezika.lekser(tekst, definicijaJezika);
+	definicijaJezika.parser(definicijaJezika, listaTokena);
+	poljeZaIspis.innerHTML = formatiranjeIspisListe(listaTokena, rezim);
 
-	if(listaParserRed[1] === true ) {
-		stek.push(listaParserRed[5])  // Novi kontekst- Indeks 5
-		return;                       // Nema dalje ako se dodaje
-	}                                 // noci kontekst na stek
-
-	// Da li se skida kontekst sa steka? - Indeks 2
-
-	if(listaParserRed[2] > 0) {
-		if(listaParserRed[2] > 1000) {
-			while(stek.length > 1) {
-				stek.pop();
-			}
-		}
-		else {
-			let p = listaParserRed[2];
-			while(p > 0) {
-				stek.pop();
-				p--;
-			}			
-		}	
-                     // Nema dalje ako se skida
-		return;      // kontekst sa steka
-	}
-}
-
-function parserTokenPojedinacni(listaTokenaRed, stek, listaParserPredata, specijalneListe) {
-	let kontekst = stek[stek.length - 1];
-
-	if(listaParserPredata.length > 0) {
-		let listaParser = listaParserPredata[kontekst];
-
-		for(let i = 0; i < listaParser.length; i++) {
-			if(listaTokenaRed[3] === true) continue;			
-
-			if (listaTokenaRed[0].match(listaParser[i][0])) {
-				obradaPrepoznatogTokena(listaTokenaRed, stek, listaParser[i]);
-				return;
-			}
-		}
-	}
-
-	if(specijalneListe.length > 0) {
-		let listeSpecijalnihTokena = specijalneListe[kontekst];
-			
-		listeSpecijalnihTokena.forEach(specLista => {
-			let rez = proveraSpecijalnihTokena(listaTokenaRed, specLista[0], specLista[1]);
-			if(rez && specLista[2] != -1) {
-				stek.push(specLista[2]);
-			}
-		});
-	}
-	
-}
-
-function proveraSpecijalnihTokena(tokenRed, listaSpec, oznaka) {
-	if(binarnaPretraga(tokenRed[0], listaSpec)) {
-		tokenRed[2] = oznaka;
-		return true;
-	}
-	
-	return false;
-}
-
-function binarnaPretraga(element, niz) {
-	let le  = 0, de = niz.length - 1;
-	let ind = parseInt(Math.floor((le + de) * 0.5));
-	
-	while(le <= de) {
-
-		if(element == niz[ind]) {
-			return true;
-		}
-		
-		if(element < niz[ind]) {
-			de = ind - 1;
-		}
-		else {
-			le = ind + 1;
-		}
-
-		ind = parseInt(Math.floor((le + de) * 0.5)); 
-	}
-
-	return false;
-}
-
-function parser(listaParser, listaTokena, specijalneListe) {
-	let stek = [  0  ];
-
-	for(let i = 0; i < listaTokena.length; i++)	{
-		parserTokenPojedinacni(listaTokena[i], stek, listaParser, specijalneListe);
-	}
-}
-
-function obradaKoda(tekst, definicija_jezika, poljeZaIspis, format) {
-	let lista = tekst.split(definicija_jezika.regexRastavljanje);
-	pripremaListe(lista);
-	utiskivanjeTokena(definicija_jezika.listaRegex, lista);
-	
-	if(PARSER === true) {
-		parser(definicija_jezika.listaParser, lista, definicija_jezika.listeSpec);
-
-	}
-	
-	poljeZaIspis.innerHTML = formatiranjeHTMLa(lista, format);
+	/* ---------------------------------------------------------------------- */
+	vremeObradeIspis(t1, "Glavna funkcija")
+	/* ---------------------------------------------------------------------- */
 }

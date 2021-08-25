@@ -12,6 +12,7 @@ Potom su došle na red optimizacije, ali, reklo bi se da ne donose neki prevelik
 ### Najvažnije datoteke:
 
 definicije_jezika.js
+
 highlighter_funkcije.js
 
 ## Log

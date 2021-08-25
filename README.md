@@ -21,7 +21,7 @@ highlighter_funkcije.js
 
 Rešen lekser.
 
-(Postoji mesto za ubrzanje, ali, kod polako postaje kompleksniji, a ubrzanja nisu posebno primetna u odnosu na regex verziju, tako da je pitanje vredi li dalje eksperimentisati.)
+(Postoji prostora za ubrzanje, ali, kod polako postaje kompleksniji, a ubrzanja nisu posebno primetna u odnosu na regex verziju, tako da je pitanje vredi li dalje eksperimentisati.)
 
 ### 1.2
 

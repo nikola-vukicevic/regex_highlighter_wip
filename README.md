@@ -1,4 +1,4 @@
-# regex_highlighter_wip
+# Syntax   highlighter
 Syntax highlighter implementiran preko regularnih izraza
 
 Posle kontekstnog parsera specijalizovanog za CSS, na red dođe i univerzalni parser koji ne koristi stek/kontekst(e), već regularne izraze.

@@ -3,7 +3,7 @@ DIY syntax highlighter
 
 ## Demo
 
-https://www.codeblog.rs/primeri/regex_highlighter/
+https://www.codeblog.rs/primeri/syntax_highlighter/
 
 Posle highlightera specijalizovanog za CSS (sa primitivnim parserom koji vodi računa o kontekstu), na red je došao i univerzalni parser ....
 Prva revizija implementirana je preko regularnih izraza i imala je (očekivano) problema sa raščlanjivanjem niski i komentara (niske unutar komentara su "razbijale" komentare), što je rešeno uvođenjem parsera (naravno, nije to pravi parser ni iz daleka, ali, vodi računa o kontekstu i - "radi posao").

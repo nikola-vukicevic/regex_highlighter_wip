@@ -1,5 +1,5 @@
 # Syntax   highlighter
-Syntax highlighter implementiran preko regularnih izraza
+DIY syntax highlighter
 
 ## Demo
 

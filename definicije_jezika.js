@@ -4,6 +4,31 @@
 //
 /* -------------------------------------------------------------------------- */
 
+// Syntax highlighter zasniva se na ideji da svaki jezik bude definisan na
+// univerzalan način, preko opštih pravila. U tom smislu, "definicija jezika"
+// je skup pravila po kojima se u datom jeziku prepoznaju specijalni znakovi,
+// komentari, niske i drugi specijalni tokeni.
+// 
+// Važnije odrednice su:
+// 	
+// 	- liste specijalnih tokena koje se koriste u lekserima
+// 	- liste specijalnih tokena koje se koriste u parserima
+// 	- maksimalna dužina specijalne niske
+// 
+// Definisane su dve vrste leksera i parsera:
+// 	
+// 	- Lekser i parser ošteg tipa
+// 	- Lekser koji koristi regularne izraze i odgovarajući parser
+// 
+// Za svaki jezik može se birati vrsa leksera i parsera, ali - to podrazumeva
+// da se mora voditi računa o prethodno navedenim listama specijalnih tokena,
+// kao i o tome da se optši lekser ne može koristiti sa regex parserom, niti
+// se regex lekser može koristiti sa opštim parserom.
+// 
+// Lekser i parser koji koriste regularne izraze su zaostavština iz prethodne
+// verzije skripte, ali, za neke jezike / sintakse (kao što su assembler,
+// markdown i regex), predstavljaju praktičnije rešenje.
+
 /* -------------------------------------------------------------------------- */
 // Jezik - TXT
 /* -------------------------------------------------------------------------- */
@@ -25,6 +50,7 @@ let TXT_parserSpecListe = new Map();
 let TXT_definicijaJezika = {
 	
 	naziv:                 "TXT",
+	defaultKlasa:          "tekst",      
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          TXT_lekserTokeni,
@@ -60,12 +86,12 @@ let HTML_lekserTokeni = new Map( [
 
 let HTML_parserPrepravljanje = new Map( [
 	
-	[ 0 , [ true , "tekst"           ] ] ,
-	[ 1 , [ true , "html_tag"        ] ] ,
-	[ 2 , [ true , "atribut_naziv"   ] ] ,
-	[ 3 , [ true , "niska_apostrofi" ] ] ,
-	[ 4 , [ true , "niska_navodnici" ] ] ,
-	[ 5 , [ true , "komentar"        ] ] ,
+	[ 0 , [ true  , true  , "tekst"           ] ] ,
+	[ 1 , [ true  , true  , "html_tag"        ] ] ,
+	[ 2 , [ false , true  , "atribut_naziv"   ] ] ,
+	[ 3 , [ true  , true  , "niska_apostrofi" ] ] ,
+	[ 4 , [ true  , true  , "niska_navodnici" ] ] ,
+	[ 5 , [ true  , true  , "komentar"        ] ] ,
 
 ] );
 
@@ -187,16 +213,16 @@ let CSS_lekserTokeni = new Map( [
 
 let CSS_parserPrepravljanje = new Map( [
 	
-	[ 0 , [ false, "tekst"             ] ] ,
-	[ 1 , [ true,  "komentar"          ] ] ,
-	[ 2 , [ true,  "komentar"          ] ] ,
-	[ 3 , [ true,  "niska_apostrofi"   ] ] ,
-	[ 4 , [ true,  "niska_navodnici"   ] ] ,
-	[ 5 , [ true,  "et_direktiva"      ] ] ,
-	[ 6 , [ true,  "id_naziv"          ] ] ,
-	[ 7 , [ true,  "klasa_naziv"       ] ] ,
-	[ 8 , [ true,  "svojstvo_naziv"    ] ] ,
-	[ 9 , [ false, "svojstvo_vrednost" ] ] ,
+	[ 0 , [ false , false , "tekst"             ] ] ,
+	[ 1 , [ true  , true  , "komentar"          ] ] ,
+	[ 2 , [ true  , true  , "komentar"          ] ] ,
+	[ 3 , [ true  , true  , "niska_apostrofi"   ] ] ,
+	[ 4 , [ true  , true  , "niska_navodnici"   ] ] ,
+	[ 5 , [ true  , true  , "et_direktiva"      ] ] ,
+	[ 6 , [ true  , true  , "id_naziv"          ] ] ,
+	[ 7 , [ true  , true  , "klasa_naziv"       ] ] ,
+	[ 8 , [ false , true  , "svojstvo_naziv"    ] ] ,
+	[ 9 , [ false , true  , "svojstvo_vrednost" ] ] ,
 
 ] );
 
@@ -456,6 +482,7 @@ CSS_parserSpecListe.set( 0 , CSS_parserSpecLista_0 )
 let CSS_definicijaJezika = {
 	
 	naziv:                 "CSS",
+	defaultKlasa:          "tekst",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          CSS_lekserTokeni,
@@ -531,13 +558,13 @@ let C_lekserTokeni = new Map( [
 
 let C_parserPrepravljanje = new Map( [
 	
-	[ 0 , [ false , "identifikator"             ] ] ,
-	[ 1 , [ true  , "komentar"                  ] ] ,
-	[ 2 , [ true  , "komentar"                  ] ] ,
-	[ 3 , [ true  , "pretprocesorska_direktiva" ] ] ,
-	[ 4 , [ true  , "niska_apostrofi"           ] ] ,
-	[ 5 , [ true  , "niska_navodnici"           ] ] ,
-	[ 6 , [ true  , "niska_backtick"            ] ] ,
+	[ 0 , [ false , false , "identifikator"             ] ] ,
+	[ 1 , [ true  , true  , "komentar"                  ] ] ,
+	[ 2 , [ true  , true  , "komentar"                  ] ] ,
+	[ 3 , [ true  , true  , "pretprocesorska_direktiva" ] ] ,
+	[ 4 , [ true  , true  , "niska_apostrofi"           ] ] ,
+	[ 5 , [ true  , true  , "niska_navodnici"           ] ] ,
+	[ 6 , [ true  , true  , "niska_backtick"            ] ] ,
 
 ] );
 
@@ -597,7 +624,8 @@ let C_parserTokeni = new Map();
 
 	let C_parserLista_3 = new Map( [
 		
-		[ ">" , [ false , true , -1 , "pretprocesorska_direktiva" ] ] ,
+		[ ">"  , [ false , true , -1 , "pretprocesorska_direktiva" ] ] ,
+		[ "\n" , [ false , true , -1 , "pretprocesorska_direktiva" ] ] ,
 	
 	] );
 
@@ -731,6 +759,7 @@ C_parserSpecListe.set( 0 , C_parserSpecLista_0 );
 let C_definicijaJezika = {
 	
 	naziv:                 "C",
+	defaultKlasa:          "identifikator",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
@@ -745,6 +774,7 @@ let C_definicijaJezika = {
 let CLIKE_definicijaJezika = {
 	
 	naziv:                 "CLIKE",
+	defaultKlasa:          "identifikator",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
@@ -763,6 +793,7 @@ let CLIKE_definicijaJezika = {
 let CPP_definicijaJezika = {
 	
 	naziv:                 "C++",
+	defaultKlasa:          "identifikator",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
@@ -781,6 +812,7 @@ let CPP_definicijaJezika = {
 let C_Sharp_definicijaJezika = {
 	
 	naziv:                 "C#",
+	defaultKlasa:          "identifikator",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
@@ -889,6 +921,7 @@ Java_parserSpecListe.set( 0 , Java_parserSpecLista_0 );
 let Java_definicijaJezika = {
 	
 	naziv:                 "Java",
+	defaultKlasa:          "identifikator",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
@@ -1011,6 +1044,7 @@ JavaScript_parserSpecListe.set( 0 , JavaScript_parserSpecLista_0 );
 let JavaScript_definicijaJezika = {
 	
 	naziv:                 "JavaScript",
+	defaultKlasa:          "identifikator",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
@@ -1042,11 +1076,11 @@ let SQL_lekserTokeni = new Map( [
 
 let SQL_parserPrepravljanje = new Map( [
 	
-	[ 0 , [ false , "tekst"           ] ] ,
-	[ 1 , [ true  , "komentar"        ] ] ,
-	[ 2 , [ true  , "niska_apostrofi" ] ] ,
-	[ 3 , [ true  , "niska_navodnici" ] ] ,
-	[ 4 , [ true  , "niska_backtick"  ] ] ,
+	[ 0 , [ false , false , "tekst"           ] ] ,
+	[ 1 , [ true  , true  , "komentar"        ] ] ,
+	[ 2 , [ true  , true  , "niska_apostrofi" ] ] ,
+	[ 3 , [ true  , true  , "niska_navodnici" ] ] ,
+	[ 4 , [ true  , true  , "niska_backtick"  ] ] ,
 
 ] );
 
@@ -1170,6 +1204,7 @@ SQL_parserSpecListe.set( 0 , SQL_parserSpecLista_0 );
 let SQL_definicijaJezika = {
 	
 	naziv:                 "SQL",
+	defaultKlasa:          "tekst",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          SQL_lekserTokeni,
@@ -1206,11 +1241,11 @@ let Python_lekserTokeni = new Map( [
 
 let Python_parserPrepravljanje = new Map( [
 	
-	[ 0 , [ false , "identifikator"   ] ] ,
-	[ 1 , [ true  , "komentar"        ] ] ,
-	[ 2 , [ true  , "niska_apostrofi" ] ] ,
-	[ 3 , [ true  , "niska_navodnici" ] ] ,
-	[ 4 , [ true  , "niska_backtick"  ] ] ,
+	[ 0 , [ false , false , "identifikator"   ] ] ,
+	[ 1 , [ true  , true  , "komentar"        ] ] ,
+	[ 2 , [ true  , true  , "niska_apostrofi" ] ] ,
+	[ 3 , [ true  , true  , "niska_navodnici" ] ] ,
+	[ 4 , [ true  , true  , "niska_backtick"  ] ] ,
 
 ] );
 
@@ -1317,6 +1352,7 @@ Python_parserSpecListe.set( 0 , Python_parserSpecLista_0 );
 let Python_definicijaJezika = {
 	
 	naziv:                 "Python",
+	defaultKlasa:          "identifikator",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          Python_lekserTokeni,
@@ -1396,21 +1432,21 @@ let PHP_parserPrepravljanje = new Map( [
 	
 	/* ----- HTML blok ----- */
 
-	[ 0 , [ true , "tekst"           ] ] ,
-	[ 1 , [ true , "html_tag"        ] ] ,
-	[ 2 , [ true , "atribut_naziv"   ] ] ,
-	[ 3 , [ true , "niska_apostrofi" ] ] ,
-	[ 4 , [ true , "niska_navodnici" ] ] ,
-	[ 5 , [ true , "komentar"        ] ] ,
+	[ 0 , [ true  , false , "tekst"           ] ] ,
+	[ 1 , [ true  , true  , "html_tag"        ] ] ,
+	[ 2 , [ false , true  , "atribut_naziv"   ] ] ,
+	[ 3 , [ true  , true  , "niska_apostrofi" ] ] ,
+	[ 4 , [ true  , true  , "niska_navodnici" ] ] ,
+	[ 5 , [ true  , true  , "komentar"        ] ] ,
 
 	/* ----- PHP blok ----- */
 
-	[ 10 , [ false , "identifikator"   ] ] ,
-	[ 11 , [ true  , "komentar"        ] ] ,
-	[ 12 , [ true  , "komentar"        ] ] ,
-	[ 13 , [ true  , "niska_apostrofi" ] ] ,
-	[ 14 , [ true  , "niska_navodnici" ] ] ,
-	[ 15 , [ true  , "niska_backtick"  ] ] ,
+	[ 10 , [ false , true , "identifikator"   ] ] ,
+	[ 11 , [ true  , true , "komentar"        ] ] ,
+	[ 12 , [ true  , true , "komentar"        ] ] ,
+	[ 13 , [ true  , true , "niska_apostrofi" ] ] ,
+	[ 14 , [ true  , true , "niska_navodnici" ] ] ,
+	[ 15 , [ true  , true , "niska_backtick"  ] ] ,
 
 ] );
 
@@ -1678,6 +1714,7 @@ PHP_parserSpecListe.set( 10 , PHP_parserSpecLista_10 );
 let PHP_definicijaJezika = {
 	
 	naziv:                 "PHP",
+	defaultKlasa:          "tekst",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          PHP_lekserTokeni,
@@ -1707,12 +1744,12 @@ let JSON_lekserTokeni = new Map( [
 
 let JSON_parserPrepravljanje = new Map( [
 	
-	[ 0 , [ false , "tekst"             ] ] ,
-	[ 1 , [ false , "svojstvo_naziv"    ] ] ,
-	[ 2 , [ false , "svojstvo_vrednost" ] ] ,
-	[ 3 , [ true  , "niska_apostrofi"   ] ] ,
-	[ 4 , [ true  , "niska_navodnici"   ] ] ,
-	[ 5 , [ true  , "niska_backtick"    ] ] ,
+	[ 0 , [ false , false , "tekst"             ] ] ,
+	[ 1 , [ false , true  , "svojstvo_naziv"    ] ] ,
+	[ 2 , [ false , false , "svojstvo_vrednost" ] ] ,
+	[ 3 , [ true  , true  , "niska_apostrofi"   ] ] ,
+	[ 4 , [ true  , true  , "niska_navodnici"   ] ] ,
+	[ 5 , [ true  , true  , "niska_backtick"    ] ] ,
 
 ] );
 
@@ -1777,7 +1814,8 @@ let JSON_parserSpecListe = new Map();
 
 let JSON_definicijaJezika = {
 	
-	naziv:                 "SQL",
+	naziv:                 "JSON",
+	defaultKlasa:          "tekst",
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          JSON_lekserTokeni,

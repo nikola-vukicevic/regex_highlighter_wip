@@ -144,4 +144,6 @@ function parserRegex(definicija_jezika, listaTokena) {
 	for(let i = 0; i < listaTokena.length; i++)	{
 		parserTokenPojedinacni(listaTokena[i], stek, definicija_jezika.listaParser, definicija_jezika.listeSpec);
 	}
+
+	return listaTokena;
 }

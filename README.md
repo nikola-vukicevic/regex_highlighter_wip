@@ -17,6 +17,14 @@ highlighter_funkcije.js
 
 ## Log
 
+### 1.4
+
+Eksperimentisao sam sa lekserom koji (odmah) spaja tokene i sa parserom koji kreira novu listu i spaja tokene iste klase (sve uzastopne delove komentara, ili, delove niske, u jedan token).
+
+Lekser radi, ali, kod postaje suviše komplikovan za ovako jednostavan program. Parser koji kreira novu listu i spaja tokene se pokazao kao bolje rešenje. Kod je možda čak i malo jednostavniji, aizvravanje je brže, tako da je to (bar za sada) finalna verzija highlighter-a.
+
+Planovi za budućnost: prepoznavanje CSS i JS blokova unutar HTML datoteka (raščlanjivanje HTML i PHP koda u PHP datotekama već postoji i funkcioniše).
+
 ### 1.3
 
 Rešen lekser.

@@ -259,6 +259,7 @@ function lekserOpsti(tekst, definicijaJezika) {
 //             dodeljuje mu se podrazumevana klasa za dati ontekst
 
 function obradaPrepoznatogTokena(token, lista, parser, definicijaJezika) {
+
 	if(parser.rez[1] === true ) {
 		parser.stek.pop();
 		
@@ -291,6 +292,13 @@ function obradaPrepoznatogTokena(token, lista, parser, definicijaJezika) {
 	/* ----- ubacivanje tokena u novu listu ----- */
 
 	parser.novaLista.push( [ token[0] , parser.rez[3] ] );
+	
+	/*
+	console.log(token)
+	console.log(parser.stek)
+	console.log(parser)
+	console.log("------------------------------")
+	//*/
 }
 
 // Parser opšteg tipa je (kao i lekser), označen kao takav, da bi se
@@ -314,6 +322,15 @@ function parserOpsti(definicijaJezika, lista) {
 		parser.kontekst = parser.stek[parser.stek.length- 1];
 		parser.mapa     = definicijaJezika.parserTokeni.get(parser.kontekst);
 		parser.rez      = parser.mapa.get(lista[i][0]);
+
+		/* ----- Pokušaj učitavanja regularnog izraza ---------------------- */
+
+		///*
+		if(lista[i][0] == "/") {
+			i = parserProveraRegularnogIzraza(i, lista, parser.novaLista, definicijaJezika);
+			continue;
+		}
+		//*/
 
 		/* ----- Prepoznati token (koji menja, ili ne menja, kontekst) ----- */
 
@@ -358,8 +375,61 @@ function parserOpsti(definicijaJezika, lista) {
 	return parser.novaLista;
 }
 
+function neuspesniPokusajUbacivanjaRegularnogIzraza(pomLista, novaLista) {
+	pomLista.forEach(e => {
+		novaLista.push(e);
+	});
+}
+
+function pokusajUbacivanjaRegularnogIzraza(s, pomLista, novaLista) {
+	if(!analizaIzraza(s)) {
+		novaLista.push( [ s , "regularni_izraz"] );
+	}
+	else {
+		neuspesniPokusajUbacivanjaRegularnogIzraza(pomLista, novaLista);
+	}
+}
+
+function parserProveraRegularnogIzraza(i, lista, novaLista, definicijaJezika) {
+	if(definicijaJezika.naziv != "JavaScript") {  // Ako bude još neki jezik,
+		novaLista.push(lista[i]);                 // biće lako dodati uslov
+		return i;
+	}
+
+	let pronadjenPar    = false;
+	let pronadjenSpecOp = false;
+	let pomLista        = []
+	let s               = "/";
+	pomLista.push( lista[i] );
+	i++;
+	
+	while(!pronadjenPar && lista[i][0] != "\n") {
+		pomLista.push(lista[i]);
+		s += lista[i][0];
+		
+		if(lista[i][0] == "/") {
+			pronadjenPar    = true;
+		}
+		
+		if(lista[i][1] == "operator" && lista[i][0].length > 1) {
+			pronadjenSpecOp = true;
+		}
+
+		i++;
+	}
+
+	if(pronadjenPar && !pronadjenSpecOp) {
+		pokusajUbacivanjaRegularnogIzraza(s, pomLista, novaLista);
+	}
+	else {
+		neuspesniPokusajUbacivanjaRegularnogIzraza(pomLista, novaLista);
+	}
+
+	return i-1;
+}
+
 /* -------------------------------------------------------------------------- */
-// Pomoćne:
+// Pomoćne funkcije:
 /* -------------------------------------------------------------------------- */
 
 function formatiranjeIspisListe(lista, rezim) {
@@ -381,6 +451,9 @@ function formatiranjeIspisListe(lista, rezim) {
 		let t_1 = lista[i][1];
 		
 		if(rezim == "tech") {
+			t_0 = t_0
+			          .replace("\n", "ENTER")
+			          .replace("\t", "TAB");
 			s += `[ |${t_0}| , ${t_1} ]\n---------------------------------\n`;
 			continue;
 		}

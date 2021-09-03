@@ -63,7 +63,8 @@ let t1 = performance.now();
 /* -------------------------------------------------------------------------- */
 
 //obradaKoda(HTML_definicijaJezika.pomTekst, HTML_definicijaJezika, poljeZaIspis, "html");
-obradaKoda(CLIKE_definicijaJezika.pomTekst, CLIKE_definicijaJezika, poljeZaIspis, "html");
+//obradaKoda(CLIKE_definicijaJezika.pomTekst, CLIKE_definicijaJezika, poljeZaIspis, "html");
+obradaKoda(JavaScript_definicijaJezika.pomTekst, JavaScript_definicijaJezika, poljeZaIspis, "html");
 
 /* ----- telemetrija ----- */
 vremeObradeIspis(t1, "Glavna funkcija")

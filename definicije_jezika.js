@@ -5,29 +5,32 @@
 /* -------------------------------------------------------------------------- */
 
 // Syntax highlighter zasniva se na ideji da svaki jezik bude definisan na
-// univerzalan način, preko opštih pravila. U tom smislu, "definicija jezika"
-// je skup pravila po kojima se u datom jeziku prepoznaju specijalni znakovi,
-// komentari, niske i drugi specijalni tokeni.
+// univerzalan način, preko opštih pravila kao što su specijalni znaci, odnosno
+// tokeni i konteksti(komentar, niska i sl, kao i unutrašnji blokovi koda - CSS
+// i JS unutar HTML-a, HTML i PHP blokovi u PHP datoteci i sl.
+// U tom smislu, "definicija jezika" je skup lista u kojima su
+// zapisana navedena pravila.
 // 
-// Važnije odrednice su:
+// Važnije odrednice definicje jezika su:
 // 	
 // 	- liste specijalnih tokena koje se koriste u lekserima
 // 	- liste specijalnih tokena koje se koriste u parserima
 // 	- maksimalna dužina specijalne niske
 // 
-// Definisane su dve vrste leksera i parsera:
+// Na raspolaganju su dve kombinacije leksera i parsera:
 // 	
-// 	- Lekser i parser ošteg tipa
-// 	- Lekser koji koristi regularne izraze i odgovarajući parser
+// 	- lekser i parser ošteg tipa
+// 	- lekser koji koristi regularne izraze i odgovarajući parser
 // 
 // Za svaki jezik može se birati vrsa leksera i parsera, ali - to podrazumeva
 // da se mora voditi računa o prethodno navedenim listama specijalnih tokena,
-// kao i o tome da se optši lekser ne može koristiti sa regex parserom, niti
-// se regex lekser može koristiti sa opštim parserom.
+// kao i o tome da se optši lekser mora koristiti sa opštim parserom, odnosno,
+// regex lekser sa regex parserom (ne mogu se kombinovati).
 // 
 // Lekser i parser koji koriste regularne izraze su zaostavština iz prethodne
-// verzije skripte, ali, za neke jezike / sintakse (kao što su assembler,
-// markdown i regex), predstavljaju praktičnije rešenje.
+// verzije skripte, ali, za neke jezike / sintakse (assembler, regex),
+// predstavljaju malo praktičnije rešenje, a za neke druge (markdown),
+// podosta praktičnije rešenje.
 
 /* -------------------------------------------------------------------------- */
 // Jezik - TXT
@@ -61,125 +64,6 @@ let TXT_definicijaJezika = {
 	pomTekst:              tekstTXT
 
 };
-
-/* -------------------------------------------------------------------------- */
-// Jezik - HTML
-/* -------------------------------------------------------------------------- */
-
-let HTML_lekserTokeni = new Map( [
-	
-	[ "<"    , "html_tag"       ] ,
-	[ ">"    , "html_tag"       ] ,
-	[ "/"    , "html_tag"       ] ,
-	[ "!"    , "html_tag"       ] ,
-	[ "-"    , "komentar"       ] ,
-	[ "="    , "atribut_dodela" ] ,
-	[ "\""   , ""               ] ,
-	[ "\'"   , ""               ] ,
-	[ "\`"   , ""               ] ,
-	[ "</"   , "html_tag"       ] ,
-	[ "/>"   , "html_tag"       ] ,
-	[ "<!"   , "doctype"        ] ,
-	[ "<!--" , "komentar"       ] ,
-	[ "-->"  , "komentar"       ] ,
-] );
-
-let HTML_parserPrepravljanje = new Map( [
-	
-	[ 0 , [ true  , true  , "tekst"           ] ] ,
-	[ 1 , [ true  , true  , "html_tag"        ] ] ,
-	[ 2 , [ false , true  , "atribut_naziv"   ] ] ,
-	[ 3 , [ true  , true  , "niska_apostrofi" ] ] ,
-	[ 4 , [ true  , true  , "niska_navodnici" ] ] ,
-	[ 5 , [ true  , true  , "komentar"        ] ] ,
-
-] );
-
-let HTML_parserTokeni = new Map();
-	
-	let HTML_parserLista_0 = new Map( [
-		
-		[ "<"    , [ true , false , 1 , "html_tag" ] ] ,
-		[ "</"   , [ true , false , 1 , "html_tag" ] ] ,
-		[ "<!--" , [ true , false , 5 , "komentar" ] ] ,
-	
-	] );
-
-	let HTML_parserLista_1 = new Map( [
-		
-		[ " "  , [ true  , true ,  2 , "white_space" ] ] ,
-		[ "\t" , [ true  , true ,  2 , "white_space" ] ] ,
-		[ ">"  , [ false , true , -1 , "html_tag"    ] ] ,
-		[ "/>" , [ false , true , -1 , "html_tag"    ] ] ,
-	
-	] );
-	
-	let HTML_parserLista_2 = new Map( [
-		
-		[ " "  , [ false , false , -1 , "white_space"     ] ] ,
-		[ ">"  , [ false , true  , -1 , "html_tag"        ] ] ,
-		[ "/>" , [ false , true  , -1 , "html_tag"        ] ] ,
-		[ "="  , [ false , false , -1 , "atribut_dodela"  ] ] ,
-		[ "\'" , [ true  , false ,  3 , "niska_apostrofi" ] ] ,
-		[ "\"" , [ true  , false ,  4 , "niska_navodnici" ] ] ,
-	
-	] );
-
-	let HTML_parserLista_3 = new Map( [
-		
-		[ "\'" , [ false , true , -1 , "niska_apostrofi" ] ] ,
-	
-	] );
-
-	HTML_parserLista_4 = new Map( [
-		
-		[ "\"" , [ false , true , -1 , "niska_navodnici" ] ] ,
-	
-	] );
-	
-	HTML_parserLista_5 = new Map( [
-		
-		[ "-->" , [ false , true , -1 , "komentar" ] ] ,
-		[ ">"   , [ false , true , -1 , "komentar" ] ] ,
-	
-	] );
-
-HTML_parserTokeni.set( 0 , HTML_parserLista_0 )
-                 .set( 1 , HTML_parserLista_1 )
-                 .set( 2 , HTML_parserLista_2 )
-                 .set( 3 , HTML_parserLista_3 )
-                 .set( 4 , HTML_parserLista_4 )
-                 .set( 5 , HTML_parserLista_5 )
-
-let HTML_parserSpecListe = new Map();
-
-let HTML_definicijaJezika = {
-	
-	naziv:                 "HTML",
-	lekser:                lekserOpsti,
-	parser:                parserOpsti,
-	lekserTokeni:          HTML_lekserTokeni,
-	maksDuzinaSpajanje:    4,
-	parserPrepravaljanje:  HTML_parserPrepravljanje,
-	parserTokeni:          HTML_parserTokeni,
-	parserSpecListe:       HTML_parserSpecListe,
-	pomTekst:              tekstHTML
-
-}
-
-let XML_definicijaJezika = {
-	
-	naziv:                 "XML",
-	lekser:                lekserOpsti,
-	parser:                parserOpsti,
-	lekserTokeni:          HTML_lekserTokeni,
-	maksDuzinaSpajanje:    4,
-	parserPrepravaljanje:  HTML_parserPrepravljanje,
-	parserTokeni:          HTML_parserTokeni,
-	parserSpecListe:       HTML_parserSpecListe,
-	pomTekst:              tekstHTML
-
-}
 
 /* -------------------------------------------------------------------------- */
 // Jezik - CSS:
@@ -580,33 +464,6 @@ let C_parserTokeni = new Map();
 		[ "\"" , [ true , false , 4, "niska_navodnici"           ] ] ,
 		[ "'"  , [ true , false , 5, "niska_apostrofi"           ] ] ,
 		[ "`"  , [ true , false , 6, "niska_backtick"            ] ] ,
-
-		/* ----- Specijalni tokeni ----- */
-
-		[ "\n"  , [ false , false , -1, "whitespace"                ] ] ,
-		[ "{"   , [ false , false , -1, "blok_otvaranje"            ] ] ,
-		[ "}"   , [ false , false , -1, "blok_zatvaranje"           ] ] ,
-		[ "&"   , [ false , false , -1, "operator"                  ] ] ,
-		[ "("   , [ false , false , -1, "otvorena_zagrada"          ] ] ,
-		[ ")"   , [ false , false , -1, "zatvorena_zagrada"         ] ] ,
-		[ "*"   , [ false , false , -1, "operator"                  ] ] ,
-		[ "="   , [ false , false , -1, "operator"                  ] ] ,
-		[ "+"   , [ false , false , -1, "operator"                  ] ] ,
-		[ ","   , [ false , false , -1, "operator"                  ] ] ,
-		[ "."   , [ false , false , -1, "operator"                  ] ] ,
-		[ "-"   , [ false , false , -1, "operator"                  ] ] ,
-		[ "/"   , [ false , false , -1, "operator"                  ] ] ,
-		[ ";"   , [ false , false , -1, "operator"                  ] ] ,
-		[ ":"   , [ false , false , -1, "operator"                  ] ] ,
-		[ "<"   , [ false , false , -1, "operator"                  ] ] ,
-		[ ">"   , [ false , false , -1, "operator"                  ] ] ,
-		[ "["   , [ false , false , -1, "otvorena_zagrada_niz"      ] ] ,
-		[ "]"   , [ false , false , -1, "zatvorena_zagrada_niz"     ] ] ,
-		[ "\\n" , [ false , false , -1, "escape_sekvenca"           ] ] ,
-		[ "\\t" , [ false , false , -1, "escape_sekvenca"           ] ] ,
-		[ "^"   , [ false , false , -1, "operator"                  ] ] ,
-		[ "|"   , [ false , false , -1, "operator"                  ] ] ,
-		[ "~"   , [ false , false , -1, "operator"                  ] ] ,
 
 	] );
 	
@@ -1055,6 +912,391 @@ let JavaScript_definicijaJezika = {
 	pomTekst:              tekstJS
 
 };
+
+/* -------------------------------------------------------------------------- */
+// Jezik - HTML
+/* -------------------------------------------------------------------------- */
+
+let HTML_lekserTokeni = new Map( [
+	
+	[ "<"    , "html_tag"       ] ,
+	[ ">"    , "html_tag"       ] ,
+	[ "/"    , "html_tag"       ] ,
+	[ "!"    , "html_tag"       ] ,
+	[ "-"    , "komentar"       ] ,
+	[ "="    , "atribut_dodela" ] ,
+	[ "\""   , ""               ] ,
+	[ "\'"   , ""               ] ,
+	[ "\`"   , ""               ] ,
+	[ "</"   , "html_tag"       ] ,
+	[ "/>"   , "html_tag"       ] ,
+	[ "<!"   , "doctype"        ] ,
+	[ "<!--" , "komentar"       ] ,
+	[ "-->"  , "komentar"       ] ,
+	
+	/* ----- CSS blok ----- */
+
+	[ "#"  , ""                 ] ,
+	[ "@"  , ""                 ] ,
+	[ ":"  , ""                 ] ,
+	[ ";"  , "operator"         ] ,
+	[ ","  , ""                 ] ,
+	[ "."  , ""                 ] ,
+	[ "*"  , ""                 ] ,
+	[ "/*" , "komentar"         ] ,
+	[ "*/" , "komentar"         ] ,
+	[ "//" , "komentar"         ] ,
+
+	/* ----- JS blok ----- */
+
+	//[ "=" , "operator"         ] ,
+	[ "+"  , "operator"         ] ,
+	[ "-"  , "operator"         ] ,
+	[ "*"  , "operator"         ] ,
+	[ "/"  , "operator"         ] ,
+	[ "=>" , "operator"         ] ,
+	[ "+=" , "operator"         ] ,
+	[ "(" , "operator"          ] ,
+	[ ")" , "operator"          ] ,
+] );
+
+let HTML_parserPrepravljanje = new Map( [
+	
+	[ 0  , [ true  , true  , "tekst"             ] ] ,
+	[ 1  , [ true  , true  , "html_tag"          ] ] ,
+	[ 2  , [ false , true  , "atribut_naziv"     ] ] ,
+	[ 3  , [ true  , true  , "niska_apostrofi"   ] ] ,
+	[ 4  , [ true  , true  , "niska_navodnici"   ] ] ,
+	[ 5  , [ true  , true  , "komentar"          ] ] ,
+	[ 7  , [ false , true  , "atribut_naziv"     ] ] , // <style>
+	[ 71 , [ true  , true  , "html_tag"          ] ] , // <style>
+	[ 8  , [ false , true  , "atribut_naziv"     ] ] , // <script>
+	[ 81 , [ true  , true  , "html_tag"          ] ] , // <script>
+
+	/* ----- CSS blok ( <style></stype> ) ----- */
+	
+	[ 10 , [ false , false , "tekst"             ] ] ,
+	[ 11 , [ true  , true  , "komentar"          ] ] ,
+	[ 12 , [ true  , true  , "komentar"          ] ] ,
+	[ 13 , [ true  , true  , "niska_apostrofi"   ] ] ,
+	[ 14 , [ true  , true  , "niska_navodnici"   ] ] ,
+	[ 15 , [ true  , true  , "et_direktiva"      ] ] ,
+	[ 16 , [ true  , true  , "id_naziv"          ] ] ,
+	[ 17 , [ true  , true  , "klasa_naziv"       ] ] ,
+	[ 18 , [ false , true  , "svojstvo_naziv"    ] ] ,
+	[ 19 , [ false , true  , "svojstvo_vrednost" ] ] ,
+	
+	/* ----- JS blok (<scrypt></scrypt>) ----- */
+
+	[ 20 , [ false , false , "identifikator"             ] ] ,
+	[ 21 , [ true  , true  , "komentar"                  ] ] ,
+	[ 22 , [ true  , true  , "komentar"                  ] ] ,
+	[ 23 , [ true  , true  , "pretprocesorska_direktiva" ] ] ,
+	[ 24 , [ true  , true  , "niska_apostrofi"           ] ] ,
+	[ 25 , [ true  , true  , "niska_navodnici"           ] ] ,
+	[ 26 , [ true  , true  , "niska_backtick"            ] ] ,
+
+] );
+
+let HTML_parserTokeni = new Map();
+	
+	let HTML_parserLista_0 = new Map( [
+		
+		[ "<"    , [ true  , false ,  1 , "html_tag" ] ] ,
+		[ "</"   , [ true  , false ,  1 , "html_tag" ] ] ,
+		[ "<!--" , [ true  , false ,  5 , "komentar" ] ] ,
+	
+	] );
+
+	let HTML_parserLista_1 = new Map( [
+		
+		[ " "      , [ true  , true ,  2 , "white_space" ] ] ,
+		[ "\t"     , [ true  , true ,  2 , "white_space" ] ] ,
+		[ ">"      , [ false , true , -1 , "html_tag"    ] ] ,
+		[ "/>"     , [ false , true , -1 , "html_tag"    ] ] ,
+		[ "style"  , [ true  , true ,  7 , "html_tag"    ] ] ,
+		[ "script" , [ true  , true ,  8 , "html_tag"    ] ] ,
+	
+	] );
+	
+	let HTML_parserLista_2 = new Map( [
+		
+		[ " "  , [ false , false , -1 , "white_space"     ] ] ,
+		[ ">"  , [ false , true  , -1 , "html_tag"        ] ] ,
+		[ "/>" , [ false , true  , -1 , "html_tag"        ] ] ,
+		[ "="  , [ false , false , -1 , "atribut_dodela"  ] ] ,
+		[ "\'" , [ true  , false ,  3 , "niska_apostrofi" ] ] ,
+		[ "\"" , [ true  , false ,  4 , "niska_navodnici" ] ] ,
+	
+	] );
+
+	let HTML_parserLista_3 = new Map( [
+		
+		[ "\'" , [ false , true , -1 , "niska_apostrofi" ] ] ,
+	
+	] );
+
+	let HTML_parserLista_4 = new Map( [
+		
+		[ "\"" , [ false , true , -1 , "niska_navodnici" ] ] ,
+	
+	] );
+	
+	let HTML_parserLista_5 = new Map( [
+		
+		[ "-->" , [ false , true , -1 , "komentar" ] ] ,
+		[ ">"   , [ false , true , -1 , "komentar" ] ] ,
+	
+	] );
+
+	/* ----- Kopije dvojke i keca - uvod u CSS kontekst ----- */
+
+	let HTML_parserLista_7 = new Map( [
+		
+		[ ">"  , [ true  , true  , 10 , "html_tag"        ] ] ,
+		[ "="  , [ false , false , -1 , "atribut_dodela"  ] ] ,
+		[ " "  , [ false , false , -1 , "white_space"     ] ] ,
+		[ "\t" , [ false , false , -1 , "white_space"     ] ] ,
+		[ "\'" , [ true  , false ,  3 , "niska_apostrofi" ] ] ,
+		[ "\"" , [ true  , false ,  4 , "niska_navodnici" ] ] ,
+
+	] );
+
+	let HTML_parserLista_71 = new Map( [
+		
+		[ "style"  , [ true  , true ,  1 , "html_tag"    ] ] ,
+		
+	] );
+
+	/* ----- CSS blok ----- */
+
+	let HTML_parserLista_10 = new Map( [
+
+		[ "/*"  , [ true  , false , 11 , "komentar"        ] ] ,
+		[ "//"  , [ true  , false , 12 , "komentar"        ] ] ,
+		[ "'"   , [ true  , false , 13 , "niska_apostrofi" ] ] ,
+		[ "\""  , [ true  , false , 14 , "niska_navodnici" ] ] ,
+		[ "@"   , [ true  , false , 15 , "et_direktiva"    ] ] ,
+		[ "#"   , [ true  , false , 16 , "id_naziv"        ] ] ,
+		[ "."   , [ true  , false , 17 , "klasa_naziv"     ] ] ,
+		[ "{"   , [ true  , false , 18 , "blok_svojstva"   ] ] ,
+		[ "*"   , [ false , false , -1 , "globalni"        ] ] ,
+		[ "</"  , [ true  , true  , 71 , "html_tag"        ] ] ,
+	
+	] );
+
+	let HTML_parserLista_11 = new Map( [
+
+		[ "*/" , [ false , true  , -1 , "komentar"      ] ] ,
+		[ "{"  , [ true  , false , 18 , "blok_svojstva" ] ] ,
+	
+	] );
+
+	let HTML_parserLista_12 = new Map( [
+
+		[ "\n" , [ false , true , -1 , "white_space" ] ] ,
+
+	] );
+
+	let HTML_parserLista_13 = new Map( [
+
+		[ "'"  , [ false , true , -1 , "niska_apostrofi" ] ] ,
+	
+	] );
+
+	let HTML_parserLista_14 = new Map( [
+
+		[ "\"" , [ false , true , -1 , "niska_navodnici" ] ] ,
+
+	] );
+
+	let HTML_parserLista_15 = new Map( [
+
+		[ ";"  , [ false , true  , -1 , "operator"      ] ] ,
+		[ "{"  , [ true  , true  , 18 , "blok_svojstva" ] ] ,
+		[ "/*" , [ true  , false , 11 , "komentar"      ] ] ,
+		[ "//" , [ true  , false , 12 , "komentar"      ] ] ,
+
+	] );
+
+	let HTML_parserLista_16 = new Map( [
+
+		[ " "  , [ false , true  , -1 , "white_space"   ] ] ,
+		[ "\t" , [ false , true  , -1 , "white_space"   ] ] ,
+		[ ","  , [ false , true  , -1 , "separator"     ] ] ,
+		[ "{"  , [ true  , true  , 18 , "blok_svojstva" ] ] ,
+		[ "/*" , [ true  , false , 11 , "komentar"      ] ] ,
+		[ "//" , [ true  , false , 12 , "komentar"      ] ] ,
+
+	] );
+
+	let HTML_parserLista_17 = new Map( [
+
+		[ " "  , [ false , true  , -1 , "white_space"   ] ] ,
+		[ "\t" , [ false , true  , -1 , "white_space"   ] ] ,
+		[ ","  , [ false , true  , -1 , "separator"     ] ] ,
+		[ "{"  , [ true  , true  , 18 , "blok_svojstva" ] ] ,
+		[ "/*" , [ true  , false , 11 , "komentar"      ] ] ,
+		[ "//" , [ true  , false , 12 , "komentar"      ] ] ,
+
+	] );
+
+	let HTML_parserLista_18 = new Map( [
+
+		[ "}"  , [ false , true  , -1 , "blok_svojstva"  ] ] ,
+		[ ":"  , [ true  , false , 19 , "atribut_dodela" ] ] ,
+		[ "/*" , [ true  , false , 11 , "komentar"       ] ] ,
+		[ "//" , [ true  , false , 12 , "komentar"       ] ] ,
+		[ "#"  , [ true  , false , 16 , "id_naziv"       ] ] ,
+		[ "."  , [ true  , false , 17 , "klasa_naziv"    ] ] ,
+
+	] );
+
+	let HTML_parserLista_19 = new Map( [
+
+		[ ";"  , [ false , true  , -1 , "operator" ] ] ,
+		[ "/*" , [ true  , false , 11 , "komentar" ] ] ,
+		[ "//" , [ true  , false , 12 , "komentar" ] ] ,
+
+	] );
+
+	/* ----- Kopije dvojke i keca - uvod u JS kontekst ----- */
+
+	let HTML_parserLista_8 = new Map( [
+		
+		[ ">"  , [ true  , true  , 20 , "html_tag"        ] ] ,
+		[ "="  , [ false , false , -1 , "atribut_dodela"  ] ] ,
+		[ " "  , [ false , false , -1 , "white_space"     ] ] ,
+		[ "\t" , [ false , false , -1 , "white_space"     ] ] ,
+		[ "\'" , [ true  , false ,  3 , "niska_apostrofi" ] ] ,
+		[ "\"" , [ true  , false ,  4 , "niska_navodnici" ] ] ,
+
+	] );
+
+	let HTML_parserLista_81 = new Map( [
+		
+		[ "script"  , [ true  , true ,  1 , "html_tag"    ] ] ,
+		
+	] );
+
+	/* ----- JS blok ----- */
+
+	let HTML_parserLista_20 = new Map( [
+
+		[ "/*" , [ true , false , 21 , "komentar"                  ] ] ,
+		[ "//" , [ true , false , 22 , "komentar"                  ] ] ,
+		[ "#"  , [ true , false , 23 , "pretprocesorska_direktiva" ] ] ,
+		[ "\"" , [ true , false , 24 , "niska_navodnici"           ] ] ,
+		[ "'"  , [ true , false , 25 , "niska_apostrofi"           ] ] ,
+		[ "`"  , [ true , false , 26 , "niska_backtick"            ] ] ,
+		[ "</" , [ true , true  , 81 , "html_tag"                  ] ] ,
+
+	] );
+	
+	let HTML_parserLista_21 = new Map( [
+		
+		[ "*/" , [ false , true , -1 , "komentar" ] ] ,
+	
+	] );
+
+	let HTML_parserLista_22 = new Map( [
+		
+		[ "\n" , [ false , true , -1 , "white_space" ] ] ,
+	
+	] );
+
+	let HTML_parserLista_23 = new Map( [
+		
+		[ ">"  , [ false , true , -1 , "pretprocesorska_direktiva" ] ] ,
+		[ "\n" , [ false , true , -1 , "pretprocesorska_direktiva" ] ] ,
+	
+	] );
+
+	let HTML_parserLista_24 = new Map( [
+		
+		[ "\"" , [ false , true , -1 , "niska_navodnici" ] ] ,
+	
+	] );
+	
+	let HTML_parserLista_25 = new Map( [
+		
+		[ "'"  , [ false , true , -1 , "niska_apostrofi" ] ] ,
+	
+	] );
+	
+	let HTML_parserLista_26 = new Map( [
+		
+		[ "`"  , [ false , true , -1 , "niska_backtick" ] ] ,
+	
+	] );
+
+HTML_parserTokeni.set( 0  , HTML_parserLista_0 )
+                 .set( 1  , HTML_parserLista_1 )
+                 .set( 2  , HTML_parserLista_2 )
+                 .set( 3  , HTML_parserLista_3 )
+                 .set( 4  , HTML_parserLista_4 )
+                 .set( 5  , HTML_parserLista_5 )
+
+                 /* ----- CSS blok ----- */
+
+                 .set( 7  , HTML_parserLista_7  )
+                 .set( 71 , HTML_parserLista_71 )
+                 .set( 10 , HTML_parserLista_10 )
+                 .set( 11 , HTML_parserLista_11 )
+                 .set( 12 , HTML_parserLista_12 )
+                 .set( 13 , HTML_parserLista_13 )
+                 .set( 14 , HTML_parserLista_14 )
+                 .set( 15 , HTML_parserLista_15 )
+                 .set( 16 , HTML_parserLista_16 )
+                 .set( 17 , HTML_parserLista_17 )
+                 .set( 18 , HTML_parserLista_18 )
+                 .set( 19 , HTML_parserLista_19 )
+
+                 /* ----- JS blok ----- */
+
+                 .set( 8  , HTML_parserLista_8  )
+                 .set( 81 , HTML_parserLista_81 )
+                 .set( 20 , HTML_parserLista_20 )
+                 .set( 21 , HTML_parserLista_21 )
+                 .set( 22 , HTML_parserLista_22 )
+                 .set( 23 , HTML_parserLista_23 )
+                 .set( 24 , HTML_parserLista_24 )
+                 .set( 25 , HTML_parserLista_25 )
+                 .set( 26 , HTML_parserLista_26 )
+
+
+let HTML_parserSpecListe = new Map();
+
+HTML_parserSpecListe.set( 10 , CSS_parserSpecLista_0        );
+HTML_parserSpecListe.set( 20 , JavaScript_parserSpecLista_0 );
+
+let HTML_definicijaJezika = {
+	
+	naziv:                 "HTML",
+	lekser:                lekserOpsti,
+	parser:                parserOpsti,
+	lekserTokeni:          HTML_lekserTokeni,
+	maksDuzinaSpajanje:    4,
+	parserPrepravaljanje:  HTML_parserPrepravljanje,
+	parserTokeni:          HTML_parserTokeni,
+	parserSpecListe:       HTML_parserSpecListe,
+	pomTekst:              tekstHTML
+
+}
+
+let XML_definicijaJezika = {
+	
+	naziv:                 "XML",
+	lekser:                lekserOpsti,
+	parser:                parserOpsti,
+	lekserTokeni:          HTML_lekserTokeni,
+	maksDuzinaSpajanje:    4,
+	parserPrepravaljanje:  HTML_parserPrepravljanje,
+	parserTokeni:          HTML_parserTokeni,
+	parserSpecListe:       HTML_parserSpecListe,
+	pomTekst:              tekstHTML
+
+}
 
 /* -------------------------------------------------------------------------- */
 // Jezik - SQL
@@ -1520,30 +1762,30 @@ let PHP_parserTokeni = new Map();
 
 		/* ----- Specijalni tokeni ----- */
 
-		[ "\n"  , [ false , false , -1, "whitespace"            ] ] ,
-		[ "{"   , [ false , false , -1, "blok_otvaranje"        ] ] ,
-		[ "}"   , [ false , false , -1, "blok_zatvaranje"       ] ] ,
-		[ "&"   , [ false , false , -1, "operator"              ] ] ,
-		[ "("   , [ false , false , -1, "otvorena_zagrada"      ] ] ,
-		[ ")"   , [ false , false , -1, "zatvorena_zagrada"     ] ] ,
-		[ "["   , [ false , false , -1, "otvorena_zagrada_niz"  ] ] ,
-		[ "]"   , [ false , false , -1, "zatvorena_zagrada_niz" ] ] ,
-		[ "*"   , [ false , false , -1, "operator"              ] ] ,
-		[ "="   , [ false , false , -1, "operator"              ] ] ,
-		[ "+"   , [ false , false , -1, "operator"              ] ] ,
-		[ ","   , [ false , false , -1, "operator"              ] ] ,
-		[ "."   , [ false , false , -1, "operator"              ] ] ,
-		[ "-"   , [ false , false , -1, "operator"              ] ] ,
-		[ "/"   , [ false , false , -1, "operator"              ] ] ,
-		[ ";"   , [ false , false , -1, "operator"              ] ] ,
-		[ "<"   , [ false , false , -1, "operator"              ] ] ,
-		[ ">"   , [ false , false , -1, "operator"              ] ] ,
-		[ "->"  , [ false , false , -1, "operator"              ] ] ,
-		[ "\\n" , [ false , false , -1, "escape_sekvenca"       ] ] ,
-		[ "\\t" , [ false , false , -1, "escape_sekvenca"       ] ] ,
-		[ "^"   , [ false , false , -1, "operator"              ] ] ,
-		[ "|"   , [ false , false , -1, "operator"              ] ] ,
-		[ "~"   , [ false , false , -1, "operator"              ] ] ,
+		//[ "\n"  , [ false , false , -1, "whitespace"            ] ] ,
+		//[ "{"   , [ false , false , -1, "blok_otvaranje"        ] ] ,
+		//[ "}"   , [ false , false , -1, "blok_zatvaranje"       ] ] ,
+		//[ "&"   , [ false , false , -1, "operator"              ] ] ,
+		//[ "("   , [ false , false , -1, "otvorena_zagrada"      ] ] ,
+		//[ ")"   , [ false , false , -1, "zatvorena_zagrada"     ] ] ,
+		//[ "["   , [ false , false , -1, "otvorena_zagrada_niz"  ] ] ,
+		//[ "]"   , [ false , false , -1, "zatvorena_zagrada_niz" ] ] ,
+		//[ "*"   , [ false , false , -1, "operator"              ] ] ,
+		//[ "="   , [ false , false , -1, "operator"              ] ] ,
+		//[ "+"   , [ false , false , -1, "operator"              ] ] ,
+		//[ ","   , [ false , false , -1, "operator"              ] ] ,
+		//[ "."   , [ false , false , -1, "operator"              ] ] ,
+		//[ "-"   , [ false , false , -1, "operator"              ] ] ,
+		//[ "/"   , [ false , false , -1, "operator"              ] ] ,
+		//[ ";"   , [ false , false , -1, "operator"              ] ] ,
+		//[ "<"   , [ false , false , -1, "operator"              ] ] ,
+		//[ ">"   , [ false , false , -1, "operator"              ] ] ,
+		//[ "->"  , [ false , false , -1, "operator"              ] ] ,
+		//[ "\\n" , [ false , false , -1, "escape_sekvenca"       ] ] ,
+		//[ "\\t" , [ false , false , -1, "escape_sekvenca"       ] ] ,
+		//[ "^"   , [ false , false , -1, "operator"              ] ] ,
+		//[ "|"   , [ false , false , -1, "operator"              ] ] ,
+		//[ "~"   , [ false , false , -1, "operator"              ] ] ,
 
 	] );
 

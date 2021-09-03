@@ -36,27 +36,40 @@ let spisakKlasa = [
 	"language-xml",
 ];
 
-function obradaBlokova(spisak) {
-	/* ----- telemetrija ------ */
-	let t1 = performance.now();
+let INDEKS_ID = 1;
 
-	spisak.forEach(klasa =>  {
-		obradaBlokovaJedneKlase(klasa);
+function obradaBlokova(spisak) {
+	/* ----- telemetrija ---------------------------------------------------- */
+	let t1 = performance.now();
+	/* ---------------------------------------------------------------------- */
+
+	let listaBlokova = [];
+
+	spisak.forEach((klasa) =>  {
+		punjenjeListeBlokova(klasa, listaBlokova);
 	});
 
-	/* ----- telemetrija ------ */
+	listaBlokova.forEach(blok => {
+		let definicijaJezika = mapaKlasa.get(blok[0]);
+		obradaPojedinacnogBloka(blok[1], definicijaJezika);
+	})
+	
+	/* ----- telemetrija ---------------------------------------------------- */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
 	console.log(`Obrada blokova (vreme obrade: ${odziv})`);
+	/* ---------------------------------------------------------------------- */
 }
 
-function obradaBlokovaJedneKlase(klasa) {
+function punjenjeListeBlokova(klasa, lista) {
+	let listaBlokova = document.getElementsByClassName(klasa);
 	
-	let blokoviKoda = document.getElementsByClassName(klasa);
-	
-	for(let i = 0; i < blokoviKoda.length; i++) {
-		let definicijaJezika = mapaKlasa.get(klasa);
-		obradaPojedinacnogBloka(blokoviKoda[i], definicijaJezika);
+	for(let i = 0; i < listaBlokova.length; i++) {
+		if(listaBlokova[i].id == "") {
+			listaBlokova[i].id = `kod_blok_pojedinacni_${INDEKS_ID}`;
+			INDEKS_ID++;
+		}
+		lista.push( [ klasa , listaBlokova[i] , listaBlokova[i].innerText , listaBlokova[i].id ] );
 	}
 }
 

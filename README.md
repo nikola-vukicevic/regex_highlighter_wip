@@ -17,6 +17,10 @@ highlighter_funkcije.js
 
 ## Log
 
+### 1.4.2
+
+Implementirano izdvajanje regularnih izraza za JavaScript.
+
 ### 1.4.1
 
 Implementirano bojenje sintakse unutar style i script tagova (u HTML blokovima)

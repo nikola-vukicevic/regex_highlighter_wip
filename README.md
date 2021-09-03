@@ -17,6 +17,10 @@ highlighter_funkcije.js
 
 ## Log
 
+### 1.4.1
+
+Implementirano bojenje sintakse unutar style i script tagova (u HTML blokovima)
+
 ### 1.4
 
 Eksperimentisao sam sa lekserom koji (odmah) spaja tokene i sa parserom koji kreira novu listu i spaja tokene iste klase (sve uzastopne delove komentara, ili, delove niske, u jedan token).

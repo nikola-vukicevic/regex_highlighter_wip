@@ -1,0 +1,1 @@
+Ideja da se syntax highlighter pokreće preko web worker-a je više nego jasna, ali, u praksi se pokazalo da nema prevelikog ubrzanja kada se obrađuje poveći broj malih blokova koda, pa je za sada highlighter sa paralelnim procesiranjem (iako kod nije ni izdaleka prekomplikovan) paralelni projekat.

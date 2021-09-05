@@ -1,3 +1,15 @@
+/* -------------------------------------------------------------------------- */
+// Copyright (c) 2021. Nikola Vukićević
+/* -------------------------------------------------------------------------- */
+
+// Cela svrha ove poveće datoteke je da omogući funkciji za parisranje tokena,
+// da prepozna da li je određena sekvenca između dva tokena "/" algebarski izraz,
+// ili regularni izraz (pri čemu je ideja da se ne koriste regularni izrazi).
+// 
+// Funkcija analizaIzraza uzima nisku znakova, kreira tokene i, preko algoritma
+// Shunting Yard, proverava da li tokeni tvore algebarski izraz, to jest, da li
+// se poklapaju operandi i operatori, kao i otvorene i zatvorene zagrade.
+
 function daLiSuZnakovi_slovo(z) {
 	return z.toLowerCase() != z.toUpperCase();
 }

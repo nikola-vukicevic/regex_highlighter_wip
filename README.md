@@ -9,6 +9,12 @@ Posle highlightera specijalizovanog za CSS (sa primitivnim parserom koji vodi ra
 Prva revizija implementirana je preko regularnih izraza i imala je (očekivano) problema sa raščlanjivanjem niski i komentara (niske unutar komentara su "razbijale" komentare), što je rešeno uvođenjem parsera (naravno, nije to pravi parser ni iz daleka, ali, vodi računa o kontekstu i - "radi posao").
 Potom su došle na red optimizacije, ali, reklo bi se da ne donose neki preveliki boljitak u odnosu na regex verziju
 
+## Instalacija
+
+HTML datoteku koja sadrži blokove koda koji su propisno formatirani (http://localhost/projekti/codeblog/clanci.php?p=kako_napraviti_syntax_highlighter#Osnovni_tehni%C4%8Dki_preduslovi_za_prikaz_koda_na_sajtovima), potrebno je povezati sa datotekom highlighter.js
+
+Ostalo se obavlja automatski.
+
 ### Najvažnije datoteke:
 
 definicije_jezika.js

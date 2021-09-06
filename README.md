@@ -11,7 +11,7 @@ Potom su došle na red optimizacije, ali, reklo bi se da ne donose neki prevelik
 
 ## Instalacija
 
-HTML datoteku koja sadrži blokove koda koji su propisno formatirani (https://www.codeblog.rs/clanci.php?p=kako_napraviti_syntax_highlighter#Osnovni_tehni%C4%8Dki_preduslovi_za_prikaz_koda_na_sajtovima), potrebno je povezati sa datotekom highlighter.js i highlighter.css
+HTML datoteku koja sadrži blokove koda koji su propisno formatirani (https://www.codeblog.rs/clanci.php?p=kako_napraviti_syntax_highlighter#Osnovni_tehni%C4%8Dki_preduslovi_za_prikaz_koda_na_sajtovima), potrebno je povezati sa datotekma highlighter.js i highlighter.css
 
 Kada je u pitanju CSS, svojstva iz gore navedene CSS datoteke mogu uticati na promenu prikaza sadržaja stranice, pa o tome treba voditi računa (univerzalni selektori su navedeni na početku, pa se to, po potrebi, lako može prepraviti ručno).
 

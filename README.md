@@ -15,7 +15,7 @@ HTML datoteku koja sadrži blokove koda koji su propisno formatirani (https://ww
 
 Kada je u pitanju CSS, svojstva iz gore navedene CSS datoteke mogu uticati na promenu prikaza sadržaja stranice, pa o tome treba voditi računa (univerzalni selektori su navedeni na početku, pa se to, po potrebi, lako može prepraviti ručno).
 
-Prepoznavanje sintaksnih elemenata i dodela klasa ("bojenje sintakse") se obavlja automatski.
+Posle uspešnog povezivanja, prepoznavanje sintaksnih elemenata i dodela klasa ("bojenje sintakse") se obavlja automatski.
 
 ### Najvažnije datoteke:
 

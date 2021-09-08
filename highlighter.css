@@ -2,6 +2,13 @@
 /* Copyright (c) 2021. Nikola Vukićević                                       */
 /* -------------------------------------------------------------------------- */
 
+/* ------------------------------------------------------------------------- */
+/*
+	Za sajt:
+	    - isključiti veličinu slova 1.05rem
+*/
+/* -------------------------------------------------------------------------- */
+
 * {
 	margin: 0;
 	padding: 0;
@@ -96,7 +103,7 @@ span {
 	font-size:     18px;
 	font-family:   inherit;
 	tab-size:      4;
-	-moz-tab-size: 4;
+	-moz-tab-size: 8;
 	background:    #313444;
 	border-radius: 4px;
 	
@@ -142,7 +149,10 @@ span {
 
 .operator {
 	color: #faa;
-	color: #fc2;
+	color: #feb;
+	color: #fee;
+	color: #fd4;
+	color: #fe8;
 }
 
 .blok_koda_otvarajuca_zagrada,
@@ -154,11 +164,13 @@ span {
 	color: #c3f;
 	color: #fda;
 	color: #fff;
+	color: #fee;
 }
 
 .zagrada_niz_otvorena,
 .zagrada_niz_zatvorena {
 	color: #fc2;
+	color: #fee;
 }
 
 .specijalni_token {
@@ -166,6 +178,7 @@ span {
 	color: #d9f;
 	color: #fe9;
 	color: #bcd;
+	color: #feb;
 }
 
 .et_direktiva,
@@ -186,12 +199,13 @@ span {
 .html_tag {
 	color: #8a3;
 	color: #ce8;
-	color: #9cf;
+	color: #9cc;
 }
 
 .svojstvo_naziv {
 	color: #d99;
 	color: #ffd;
+	color: #eed;
 }
 
 .svojstvo_vrednost {
@@ -302,8 +316,10 @@ span {
 	color: #d9f;
 }
 
+.regularni_izraz,
 .regex {
-	color: #80e0ff;
+	color: #aef;
+	color: #adf;
 }
 
 .regex_pocetak,

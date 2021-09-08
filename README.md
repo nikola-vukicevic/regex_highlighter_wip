@@ -4,6 +4,7 @@ DIY syntax highlighter
 ## Demo
 
 https://www.codeblog.rs/primeri/syntax_highlighter/
+
 https://www.codeblog.rs/primeri/syntax_highlighter/highlighter_multithreading/
 
 Posle highlightera specijalizovanog za CSS (sa primitivnim parserom koji vodi računa o kontekstu), na red je došao i univerzalni parser ....

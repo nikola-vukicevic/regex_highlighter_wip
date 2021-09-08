@@ -2,41 +2,12 @@
 // Copyright (c) 2021. Nikola Vukićević
 /* -------------------------------------------------------------------------- */
 
-let mapaKlasa = new Map();
-
-mapaKlasa.set("language-text",       TXT_definicijaJezika)
-         .set("language-assembler",  Assembler_definicijaJezika)
-         .set("language-clike",      CLIKE_definicijaJezika)
-         .set("language-css",        CSS_definicijaJezika)
-         .set("language-html",       HTML_definicijaJezika)
-         .set("language-java",       Java_definicijaJezika)
-         .set("language-javascript", JavaScript_definicijaJezika)
-         .set("language-json",       JSON_definicijaJezika)
-         .set("language-markup",     Markup_definicijaJezika)
-         .set("language-php",        PHP_definicijaJezika)
-         .set("language-python",     Python_definicijaJezika)
-         .set("language-regex",      RegEx_definicijaJezika)
-         .set("language-sql",        SQL_definicijaJezika)
-         .set("language-xml",        XML_definicijaJezika)
-
-let spisakKlasa = [
-	"language-text",
-	"language-assembler",
-	"language-css",
-	"language-html",
-	"language-javascript",
-	"language-clike",
-	"language-java",
-	"language-json",
-	"language-markup",
-	"language-sql",
-	"language-python",
-	"language-regex",
-	"language-php",
-	"language-xml",
-];
-
-let INDEKS_ID = 1;
+let MULTITHREADING = typeof(Worker) !== undefined && true;
+let BROJ_THREADOVA = navigator.hardwareConcurrency;
+let KORAK          = BROJ_THREADOVA;
+let INDEKS_ID      = 1;
+let INDEKS_THREAD;
+let T1, T2, ODZIV;
 
 function obradaBlokova(spisak) {
 	/* ----- telemetrija ---------------------------------------------------- */
@@ -49,11 +20,16 @@ function obradaBlokova(spisak) {
 		punjenjeListeBlokova(klasa, listaBlokova);
 	});
 
-	listaBlokova.forEach(blok => {
-		let definicijaJezika = mapaKlasa.get(blok[0]);
-		obradaPojedinacnogBloka(blok[1], definicijaJezika);
-	})
-	
+	if(MULTITHREADING && listaBlokova.length > KORAK) {
+		kreiranjeWorkera(listaBlokova);
+	}
+	else {
+		listaBlokova.forEach(blok => {
+			let definicijaJezika = mapaKlasa.get(blok[0]);
+			obradaPojedinacnogBloka(blok[1], definicijaJezika);
+		});
+	}
+		
 	/* ----- telemetrija ---------------------------------------------------- */
 	let t2    = performance.now();
 	let odziv = (t2 - t1) + "ms";
@@ -86,5 +62,7 @@ function odWrapperovanje() {
 
 //odWrapperovanje();
 setTimeout(() => {
-	obradaBlokova(spisakKlasa);
+	if(typeof(document) !== "undefined") {
+		obradaBlokova(spisakKlasa);
+	}
 }, 100);

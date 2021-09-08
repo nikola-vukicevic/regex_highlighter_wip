@@ -36,32 +36,11 @@
 // Jezik - TXT
 /* -------------------------------------------------------------------------- */
 
-let TXT_lekserTokeni = new Map();
-	
-let TXT_parserPrepravljanje = new Map();
-	
-	TXT_parserPrepravljanje.set( 0 , [ false , "tekst" ] );
-
-let TXT_parserTokeni = new Map();
-	
-	let TXT_parserLista_0 = new Map();
-		
-TXT_parserTokeni.set( 0, TXT_parserLista_0 );
-
-let TXT_parserSpecListe = new Map();
-
 let TXT_definicijaJezika = {
 	
-	naziv:                 "TXT",
-	defaultKlasa:          "tekst",      
-	lekser:                lekserOpsti,
-	parser:                parserOpsti,
-	lekserTokeni:          TXT_lekserTokeni,
-	maksDuzinaSpajanje:    1,
-	parserPrepravaljanje:  TXT_parserPrepravljanje,
-	parserTokeni:          TXT_parserTokeni,
-	parserSpecListe:       TXT_parserSpecListe,
-	pomTekst:              tekstTXT
+	naziv:        "TXT",
+	defaultKlasa: "tekst",      
+	//pomTekst:     tekstTXT
 
 };
 
@@ -374,7 +353,7 @@ let CSS_definicijaJezika = {
 	parserPrepravaljanje:  CSS_parserPrepravljanje,
 	parserTokeni:          CSS_parserTokeni,
 	parserSpecListe:       CSS_parserSpecListe,
-	pomTekst:              tekstCSS
+	//pomTekst:              tekstCSS
 
 }
 
@@ -384,59 +363,59 @@ let CSS_definicijaJezika = {
 
 let C_lekserTokeni = new Map( [
 	
-	[ "/*"  , "komentar"                  ] ,
-	[ "//"  , "komentar"                  ] ,
-	[ "*/"  , "komentar"                  ] ,
-	[ "#"   , "pretprocesorska_direktiva" ] ,
-	[ ":"   , "operator"                  ] ,
-	[ "\""  , "niska_navodnici"           ] ,
-	[ "\'"  , "niska_apostrofi"           ] ,
-	[ "\`"  , "niska_backtick"            ] ,
-	[ "\\"  , "escape_sekvenca"           ] ,
-	[ "="   , "operator"                  ] ,
-	[ "+"   , "operator"                  ] ,
-	[ "-"   , "operator"                  ] ,
-	[ "*"   , "operator"                  ] ,
-	[ "/"   , "operator"                  ] ,
-	[ "%"   , "operator"                  ] ,
-	[ "+="  , "operator"                  ] ,
-	[ "-="  , "operator"                  ] ,
-	[ "*="  , "operator"                  ] ,
-	[ "/="  , "operator"                  ] ,
-	[ "%="  , "operator"                  ] ,
-	[ ">>=" , "operator"                  ] ,
-	[ "<<=" , "operator"                  ] ,
-	[ "&="  , "operator"                  ] ,
-	[ "^="  , "operator"                  ] ,
-	[ "|="  , "operator"                  ] ,
-	[ "++"  , "operator"                  ] ,
-	[ "--"  , "operator"                  ] ,
-	[ "=="  , "operator"                  ] ,
-	[ "!="  , "operator"                  ] ,
-	[ ">"   , "operator"                  ] ,
-	[ "<"   , "operator"                  ] ,
-	[ ">="  , "operator"                  ] ,
-	[ "<="  , "operator"                  ] ,
-	[ "!"   , "operator"                  ] ,
-	[ "&&"  , "operator"                  ] ,
-	[ "||"  , "operator"                  ] ,
-	[ "&"   , "operator"                  ] ,
-	[ "|"   , "operator"                  ] ,
-	[ "^"   , "operator"                  ] ,
-	[ "~"   , "operator"                  ] ,
-	[ "<<"  , "operator"                  ] ,
-	[ ">>"  , "operator"                  ] ,
-	[ "?"   , "operator"                  ] ,
-	[ ","   , "operator"                  ] ,
-	[ "."   , "operator"                  ] ,
-	[ ";"   , "operator"                  ] ,
-	[ "->"  , "operator"                  ] ,
-	[ "("   , "operator"                  ] ,
-	[ ")"   , "operator"                  ] ,
-	[ "{"   , "operator"                  ] ,
-	[ "}"   , "operator"                  ] ,
-	[ "["   , "operator"                  ] ,
-	[ "]"   , "operator"                  ] ,
+	[ "/*"  , "komentar"                      ] ,
+	[ "//"  , "komentar"                      ] ,
+	[ "*/"  , "komentar"                      ] ,
+	[ "#"   , "pretprocesorska_direktiva"     ] ,
+	[ ":"   , "operator"                      ] ,
+	[ "\""  , "niska_navodnici"               ] ,
+	[ "\'"  , "niska_apostrofi"               ] ,
+	[ "\`"  , "niska_backtick"                ] ,
+	[ "\\"  , "escape_sekvenca"               ] ,
+	[ "="   , "operator"                      ] ,
+	[ "+"   , "operator"                      ] ,
+	[ "-"   , "operator"                      ] ,
+	[ "*"   , "operator"                      ] ,
+	[ "/"   , "operator"                      ] ,
+	[ "%"   , "operator"                      ] ,
+	[ "+="  , "operator"                      ] ,
+	[ "-="  , "operator"                      ] ,
+	[ "*="  , "operator"                      ] ,
+	[ "/="  , "operator"                      ] ,
+	[ "%="  , "operator"                      ] ,
+	[ ">>=" , "operator"                      ] ,
+	[ "<<=" , "operator"                      ] ,
+	[ "&="  , "operator"                      ] ,
+	[ "^="  , "operator"                      ] ,
+	[ "|="  , "operator"                      ] ,
+	[ "++"  , "operator"                      ] ,
+	[ "--"  , "operator"                      ] ,
+	[ "=="  , "operator"                      ] ,
+	[ "!="  , "operator"                      ] ,
+	[ ">"   , "operator"                      ] ,
+	[ "<"   , "operator"                      ] ,
+	[ ">="  , "operator"                      ] ,
+	[ "<="  , "operator"                      ] ,
+	[ "!"   , "operator"                      ] ,
+	[ "&&"  , "operator"                      ] ,
+	[ "||"  , "operator"                      ] ,
+	[ "&"   , "operator"                      ] ,
+	[ "|"   , "operator"                      ] ,
+	[ "^"   , "operator"                      ] ,
+	[ "~"   , "operator"                      ] ,
+	[ "<<"  , "operator"                      ] ,
+	[ ">>"  , "operator"                      ] ,
+	[ "?"   , "operator"                      ] ,
+	[ ","   , "operator"                      ] ,
+	[ "."   , "operator"                      ] ,
+	[ ";"   , "operator"                      ] ,
+	[ "->"  , "operator"                      ] ,
+	[ "("   , "zagrada_obicna_otvorena"       ] ,
+	[ ")"   , "zagrada_obicna_zatvorena"      ] ,
+	[ "{"   , "blok_koda_otvarajuca_zagrada"  ] ,
+	[ "}"   , "blok_koda_zatvarajuca_zagrada" ] ,
+	[ "["   , "otvorena_zagrada_niz"          ] ,
+	[ "]"   , "zatvorena_zagrada_niz"         ] ,
 
 ] );
 
@@ -446,8 +425,8 @@ let C_parserPrepravljanje = new Map( [
 	[ 1 , [ true  , true  , "komentar"                  ] ] ,
 	[ 2 , [ true  , true  , "komentar"                  ] ] ,
 	[ 3 , [ true  , true  , "pretprocesorska_direktiva" ] ] ,
-	[ 4 , [ true  , true  , "niska_apostrofi"           ] ] ,
-	[ 5 , [ true  , true  , "niska_navodnici"           ] ] ,
+	[ 4 , [ true  , true  , "niska_navodnici"           ] ] ,
+	[ 5 , [ true  , true  , "niska_apostrofi"           ] ] ,
 	[ 6 , [ true  , true  , "niska_backtick"            ] ] ,
 
 ] );
@@ -624,7 +603,7 @@ let C_definicijaJezika = {
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       C_parserSpecListe,
-	pomTekst:              tekstC
+	//pomTekst:              tekstC
 
 };
 
@@ -639,7 +618,7 @@ let CLIKE_definicijaJezika = {
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       C_parserSpecListe,
-	pomTekst:              tekstC
+	//pomTekst:              tekstC
 
 };
 
@@ -658,7 +637,7 @@ let CPP_definicijaJezika = {
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       C_parserSpecListe,
-	pomTekst:              tekstCPP
+	//pomTekst:              tekstCPP
 
 };
 
@@ -677,7 +656,7 @@ let C_Sharp_definicijaJezika = {
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       C_parserSpecListe,
-	pomTekst:              tekstCSharp
+	//pomTekst:              tekstCSharp
 
 };
 
@@ -786,7 +765,7 @@ let Java_definicijaJezika = {
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       Java_parserSpecListe,
-	pomTekst:              tekstJava
+	//pomTekst:              tekstJava
 
 };
 
@@ -909,7 +888,7 @@ let JavaScript_definicijaJezika = {
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       JavaScript_parserSpecListe,
-	pomTekst:              tekstJS
+	//pomTekst:              tekstJS
 
 };
 
@@ -1045,7 +1024,7 @@ let HTML_parserTokeni = new Map();
 	let HTML_parserLista_5 = new Map( [
 		
 		[ "-->" , [ false , true , -1 , "komentar" ] ] ,
-		[ ">"   , [ false , true , -1 , "komentar" ] ] ,
+		// [ ">"   , [ false , true , -1 , "komentar" ] ] ,
 	
 	] );
 
@@ -1280,7 +1259,7 @@ let HTML_definicijaJezika = {
 	parserPrepravaljanje:  HTML_parserPrepravljanje,
 	parserTokeni:          HTML_parserTokeni,
 	parserSpecListe:       HTML_parserSpecListe,
-	pomTekst:              tekstHTML
+	//pomTekst:              tekstHTML
 
 }
 
@@ -1294,7 +1273,7 @@ let XML_definicijaJezika = {
 	parserPrepravaljanje:  HTML_parserPrepravljanje,
 	parserTokeni:          HTML_parserTokeni,
 	parserSpecListe:       HTML_parserSpecListe,
-	pomTekst:              tekstHTML
+	//pomTekst:              tekstHTML
 
 }
 
@@ -1454,7 +1433,7 @@ let SQL_definicijaJezika = {
 	parserPrepravaljanje:  SQL_parserPrepravljanje,
 	parserTokeni:          SQL_parserTokeni,
 	parserSpecListe:       SQL_parserSpecListe,
-	pomTekst:              tekstSQL
+	//pomTekst:              tekstSQL
 
 };
 
@@ -1602,7 +1581,7 @@ let Python_definicijaJezika = {
 	parserPrepravaljanje:  Python_parserPrepravljanje,
 	parserTokeni:          Python_parserTokeni,
 	parserSpecListe:       Python_parserSpecListe,
-	pomTekst:              tekstPython
+	//pomTekst:              tekstPython
 
 }
 
@@ -1964,7 +1943,7 @@ let PHP_definicijaJezika = {
 	parserPrepravaljanje:  PHP_parserPrepravljanje,
 	parserTokeni:          PHP_parserTokeni,
 	parserSpecListe:       PHP_parserSpecListe,
-	pomTekst:              tekstPHP
+	//pomTekst:              tekstPHP
 
 };
 
@@ -2065,7 +2044,7 @@ let JSON_definicijaJezika = {
 	parserPrepravaljanje:  JSON_parserPrepravljanje,
 	parserTokeni:          JSON_parserTokeni,
 	parserSpecListe:       JSON_parserSpecListe,
-	pomTekst:              tekstSQL
+	//pomTekst:              tekstSQL
 
 };
 
@@ -2191,3 +2170,37 @@ let RegEx_definicijaJezika = {
 	listeSpec:          RegEx_specijalneListe
 
 }
+
+let mapaKlasa = new Map();
+
+mapaKlasa.set("language-text",       TXT_definicijaJezika)
+         .set("language-assembler",  Assembler_definicijaJezika)
+         .set("language-clike",      CLIKE_definicijaJezika)
+         .set("language-css",        CSS_definicijaJezika)
+         .set("language-html",       HTML_definicijaJezika)
+         .set("language-java",       Java_definicijaJezika)
+         .set("language-javascript", JavaScript_definicijaJezika)
+         .set("language-json",       JSON_definicijaJezika)
+         .set("language-markup",     Markup_definicijaJezika)
+         .set("language-php",        PHP_definicijaJezika)
+         .set("language-python",     Python_definicijaJezika)
+         .set("language-regex",      RegEx_definicijaJezika)
+         .set("language-sql",        SQL_definicijaJezika)
+         .set("language-xml",        XML_definicijaJezika)
+
+let spisakKlasa = [
+	"language-text",
+	"language-assembler",
+	"language-css",
+	"language-html",
+	"language-javascript",
+	"language-clike",
+	"language-java",
+	"language-json",
+	"language-markup",
+	"language-sql",
+	"language-python",
+	"language-regex",
+	"language-php",
+	"language-xml",
+];

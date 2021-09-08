@@ -10,220 +10,173 @@
 // Shunting Yard, proverava da li tokeni tvore algebarski izraz, to jest, da li
 // se poklapaju operandi i operatori, kao i otvorene i zatvorene zagrade.
 
-function daLiSuZnakovi_slovo(z) {
-	return z.toLowerCase() != z.toUpperCase();
+function analizaIzrazaTokenDaLiJeWhiteSpace(token) {
+	return token[0] == " " || token[0] == "\t";
 }
 
-function daLiSuZnakovi_operator(z) {
-	return z == "+" || z == "-" || z == "*" || z == "/";
-}
-
-function daLiSuZnakovi_broj(z, tokeni) {
-	let uslov;
-	
-	uslov = z[0] >= '0' && z[0] <= '9' || z[0] == '.';
-	if(uslov) return true;
-
-	uslov = z[0] == '.';
-	if(uslov) return true;
-	
-	uslov = (z[0] == 'e' || z[0] == 'E') && (tokeni.prethodniTip == 1);
-	if(uslov) return true;
-}
-
-function analizaIzrazaUpisUListu(tokeni) {
-	if(tokeni.s == "") return;
-	tokeni.lista.push( [ "a" , 1 ] );
-	tokeni.s = "";
-}
-
-function analizaIzrazaZnak_slovo(z, tokeni) {
-	tokeni.tip = 1;
-	if(tokeni.tip != tokeni.prethodniTip) {
-		analizaIzrazaUpisUListu(tokeni);
-	}
-	tokeni.s           += z;
-	tokeni.prethodniTip = 1;
-}
-
-function analizaIzrazaZnak_operator(z, tokeni) {
-	tokeni.tip = 2;
-	if(tokeni.tip != tokeni.prethodniTip) {
-		analizaIzrazaUpisUListu(tokeni);
-	}
-	tokeni.lista.push( [ z , 2 ] );
-	tokeni.prethodniTip = 2;
-}
-
-function analizaIzrazaZnak_broj(z, tokeni) {
-	if(tokeni.prethodniTip == 1) {
-		tokeni.s += z;
-		return;
-	}
-
-	tokeni.tip = 5;
-	if(tokeni.tip != tokeni.prethodniTip) {
-		analizaIzrazaUpisUListu(tokeni);
-	}
-	tokeni.s           += z;
-	tokeni.prethodniTip = 5;
-}
-
-function analizaIzrazaZnak_otvorenaZagrada(z, tokeni) {
-	tokeni.tip = 3;
-	
-	if(tokeni.tip != tokeni.prethodniTip) {
-		analizaIzrazaUpisUListu(tokeni);
-	}
-
-	if(tokeni.prethodniTip == 2) {
-		tokeni.lista.push( [ z , 3 ] );
-		return;
-	}
-
-	if(tokeni.prethodniTip == 1) {
-		tokeni.stek1.push(1);
-		return;
-	}
-}
-
-function analizaIzrazaZnak_zatvorenaZagrada(z, tokeni) {
-	tokeni.tip = 4;
-
-	if(tokeni.tip != tokeni.prethodniTip) {
-		analizaIzrazaUpisUListu(tokeni);
-	}
-
-	if(tokeni.stek1[tokeni.stek1.length - 1] == 1) {
-		tokeni.stek1.pop();
+function analizaIzrazaPromenaKonteksta(tkn, stek, prethodniTip) { // 1 - otvorena zagrada;
+	let kontekst = stek[stek.length - 1];                         // 2 - zatvorena zagrada
+                                                                  // 3 - navodnici, apostrofi, backtick
+	if(tkn == 1) {
+		if(prethodniTip == "operator")
+			stek.push(0);
+		else
+			stek.push(1);
 		return;
 	}
 	
-	if(tokeni.prethodniTip == 1) {
-		tokeni.lista.push( [ z , 4 ] );
+	if(tkn == 2) {
+		if(stek.length > 0) stek.pop();
 		return;
 	}
-}
 
-function analizaIzrazaTokenizacija(izraz, tokeni) {
-	for(let i = 0; i < izraz.length; i++) {
-		let z        = izraz[i];
-		let kontekst = tokeni.stek1[tokeni.stek1.length - 1];
-
-		if(z == " " || z == "\t" || z == "/") continue;
-
-		if(daLiSuZnakovi_slovo(z)) {
-			if(kontekst != 0) continue;
-			analizaIzrazaZnak_slovo(z, tokeni);
-			continue;
+	if(tkn == 3) {
+		if(kontekst != 3) {
+			stek.push(3);
+			return;
 		}
-
-		if(daLiSuZnakovi_operator(z)) {
-			if(kontekst != 0) continue;
-			analizaIzrazaZnak_operator(z, tokeni);
-			continue;
-		}
-
-		if(daLiSuZnakovi_broj(z, tokeni)) {
-			if(kontekst != 0) continue;
-			analizaIzrazaZnak_broj(z, tokeni);
-			continue;
-		}
-
-		if(z == "(") {
-			analizaIzrazaZnak_otvorenaZagrada(z, tokeni);
-			continue;
-		}
-
-		if(z == ")") {
-			analizaIzrazaZnak_zatvorenaZagrada(z, tokeni);
-			continue;
-		}
-
-		if(kontekst != 0) continue;
 		
-		// Ako se pojavi neki nepredviđen znak ....
-		return false;
+		if(stek.length > 0 && kontekst == 3) {
+			stek.pop();
+			return;
+		}
 	}
-
-	analizaIzrazaUpisUListu(tokeni);
-
-	return tokeni.lista;
 }
 
-function analizaIzrazaListaURed(tokeni) {
-	for(let i = 0; i < tokeni.lista.length; i++) {
-		let t = tokeni.lista[i];
+function analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika) {
+	let tokeni       = [];
+	let stek         = [ 0 ];
+	let kontekst     = 0;
+	let prethodniTip = "operator";
+
+	lista.forEach(t => {
+		if(analizaIzrazaTokenDaLiJeWhiteSpace(t)) return;
 		
-		if(t[1] == 1) { // a
-			tokeni.red.push(t);
-			continue;
+		kontekst = stek[stek.length - 1];
+		
+		if(t[0] == "(") {
+			analizaIzrazaPromenaKonteksta(1, stek, prethodniTip);
+			return;
+		}
+		
+		if(t[0] == ")") {
+			analizaIzrazaPromenaKonteksta(2, stek, prethodniTip);
+			return;
+		}
+		
+		if(t[0] == "\"" || t[0] == "\'" || t[0] == "\`") {
+			analizaIzrazaPromenaKonteksta(3, stek, prethodniTip);
+			return;
+		}
+				
+		if(kontekst > 0) return;
+		if(t[0] == "/") return;
+		if(t[1] == "operator" && t[0].length > 1) return;
+		prethodniTip = t[1];
+		
+		tokeni.push(t);
+		//console.log(t)
+	});
+
+	return tokeni;
+}
+
+function ShuntingYard1(lista) {
+	let red  = [];
+	let stek = [];
+
+	lista.forEach(t => {
+		if(t[1] == "") {
+			red.push("a");
+			return;
 		}
 
-		if(t[1] == 2 || t[1] == 3) {
-			tokeni.stek2.push(t);
-			continue;
+		if(t[0] == "(") {
+			stek.push("(");
+			return;
 		}
 
-		if(t[1] == 4) {
-			while(tokeni.stek2.length > 0 && tokeni.stek2[tokeni.stek2.length - 1][1] == 2) {
-				tokeni.red.push( [ "+" , 2 ] );
-				tokeni.stek2.pop();
+		if(t[0] == ")") {
+			while(stek.length > 0 && stek[stek.length - 1] == "+") {
+				red.push(stek[stek.length - 1]);
+				stek.pop();
 			}
-			tokeni.stek2.pop();
-			continue;
+			if(stek.length > 0) stek.pop();
+			return;
 		}
+
+		if(t[1] == "operator") {               // U pravom Shunting Yard-u, operator bi
+			if(stek[stek.length - 1] == "+") { // se premeštao sa steka u red, ali, budući
+				red.push("+");                 // da su svi operandi svedeni na "a", a svi
+			}                                  // operatori na "+", postupak se
+			else {                             // može uprostiti
+				stek.push("+");
+			}
+			return;
+		}
+
+		if(t[1] != "") {
+			red.push("x");
+			return;
+		}
+	});
+
+	while(stek.length > 0) {
+		red.push("+");
+		stek.pop();
 	}
 
-	while(tokeni.stek2.length > 0) {
-		tokeni.red.push( [ "+" , 2 ] );
-		tokeni.stek2.pop();
-	}
+	//console.log(red)
+	return red;
 }
 
-function analizaIzrazaInterpretacija(tokeni) {
-	for(let i = 0; i < tokeni.red.length; i++) {
-		let t = tokeni.red[i];
-		
-		if(t[1] == 1) {
-			tokeni.stek2.push(t);
-			continue;
+function ShuntingYard2(lista) {
+	let stek  = [];
+	let sveOk = true;
+
+	lista.forEach(t => {
+		if(t == "a") {
+			stek.push("a");
+			return;
 		}
 
-		if(t[1] == 2) {
-			if(tokeni.stek2.length >= 2) {
-				tokeni.stek2.pop(); // u pravom Shunting yard-u, ovde bi
-				                   // bila skinuta dva tokena, izračunat
-				                   // rezultat i vraćen na stek
+		if(t == "+") {
+			if(stek.length > 1) {
+				stek.pop();
+				return;
 			}
 			else {
-				return false;
+				sveOk = false;
 			}
-			continue;
 		}
-	}
 
-	return tokeni.stek2.length == 1 && tokeni.stek2[tokeni.stek2.length - 1][1] == 1;
+		if(t == "x") {
+			sveOk = false;
+			return;
+		}
+	});
+
+	if(sveOk) {
+		return stek;
+	}
+	else {
+		return [];
+	}
 }
 
-function analizaIzraza(izraz) {
-	let tokeni = {
-		s:             "" ,
-		tip:           -1 , // 1 - identifikator; 2 - operator;
-		                    // 3 - otvorena zagrada; 4 - zatvorena zagrada
-		                    // 5 - broj
-		prethodniZnak: 'a' ,
-		prethodniTip:  -1 ,
-		lista:         [] ,
-		red:           [] ,
-		stek1:         [ 0 ] , // kreiranje liste tokena
-		stek2:         []      // shunting yard
-	}
-
-	if(!analizaIzrazaTokenizacija(izraz, tokeni)) return false;
-	analizaIzrazaListaURed(tokeni);
-	return analizaIzrazaInterpretacija(tokeni);
+function analizaIzraza(lista, definicijaJezika) {
+	let tokeni = null;
+	tokeni = analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika);
+	//console.log(tokeni)
+	tokeni = ShuntingYard1(tokeni);
+	//console.log(tokeni)
+	tokeni = ShuntingYard2(tokeni);
+	//console.log(tokeni)
+	
+	//console.log(tokeni)
+	return tokeni.length == 1 && tokeni[0] == "a";
 }
+
 
 /* -------------------------------------------------------------------------- */
 // Telemetrija

@@ -29,11 +29,11 @@ highlighter_funkcije.js
 
 ### 1.5.0
 
-Dodata opcija za paralelno procesiranje.
+Dodata opcija za paralelno procesiranje i unapređen algoritam za prepoznavanje regularnih izraza.
 
 ### 1.4.2
 
-Implementirano izdvajanje regularnih izraza za JavaScript.
+Implementirano izdvajanje regularnih izraza za JavaScript (algoritam zapravo prepoznaje algebarske izraze).
 
 ### 1.4.1
 

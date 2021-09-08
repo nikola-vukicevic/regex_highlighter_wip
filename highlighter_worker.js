@@ -18,7 +18,7 @@ onmessage = e => {
 	let definicijaJezika = mapaKlasa.get(e.data.definicijaJezika);
 	let rezim            = e.data.rezim;
 
-	let rez = f27Worker(tekst, definicijaJezika, rezim);
+	let rez = obradaKodaWorker(tekst, definicijaJezika, rezim);
 	// console.log(rez)
 	// console.log(e.data)
 	

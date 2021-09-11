@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------------- */
-// Syntax highlighter v1.5.0
+// Syntax highlighter v1.5.1
 // Copyright (c) 2021. Nikola Vukićević
 /* -------------------------------------------------------------------------- */
 
@@ -63,8 +63,9 @@ function analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika) {
 		}
 
 		if(kontekst > 0) return;
+		console.log(t)
 		if(t[0] == "/") return;
-		if(t[1] == "operator" && t[0].length > 1) return;
+		if(t[1] == "operator" && definicijaJezika.lekserUnarniOperatori.get(t[0]) != null) return;
 		prethodniTip = t[1];
 
 		tokeni.push(t);
@@ -159,10 +160,11 @@ function ShuntingYard2(lista) {
 function analizaIzraza(lista, definicijaJezika) {
 	let tokeni = null;
 	tokeni = analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika);
-
+	console.log(tokeni)
 	tokeni = ShuntingYard1(tokeni);
-
+	console.log(tokeni)
 	tokeni = ShuntingYard2(tokeni);
+	console.log(tokeni)
 
 	return tokeni.length == 1 && tokeni[0] == "a";
 }
@@ -377,8 +379,13 @@ function parserOpsti(definicijaJezika, lista) {
 		parser.mapa     = definicijaJezika.parserTokeni.get(parser.kontekst);
 		parser.rez      = parser.mapa.get(lista[i][0]);
 
-		if( lista[i][0] == "/" && parser.kontekst == 0) {
+		if(lista[i][0] == "/" && parser.kontekst == definicijaJezika.kontekstZaRegex) {
 			i = parserProveraRegularnogIzraza(parser.kontekst, i, lista, parser.novaLista, definicijaJezika);
+			continue;
+		}
+
+		if(lista[i][0] == "<" && parser.kontekst == definicijaJezika.kontekstZaGenerike) {
+			i = parserPokusajUcitavanjaGenerika(parser.kontekst, i, lista, parser.novaLista, definicijaJezika);
 			continue;
 		}
 
@@ -434,15 +441,9 @@ function pokusajUbacivanjaRegularnogIzraza(s, pomLista, novaLista, definicijaJez
 }
 
 function parserProveraRegularnogIzraza(kontekst, i, lista, novaLista, definicijaJezika) {
-	if(definicijaJezika.naziv != "JavaScript") {
-		novaLista.push(lista[i]);               
-		return i;
-	}
-
-	let pronadjenPar    = false;
-
-	let pomLista        = []
-	let s               = "/";
+	let pronadjenPar = false;
+	let pomLista     = []
+	let s            = "/";
 	pomLista.push( lista[i] );
 	i++;
 
@@ -467,6 +468,56 @@ function parserProveraRegularnogIzraza(kontekst, i, lista, novaLista, definicija
 	return i-1;
 }
 
+function parserPraznjenjePomListe(pomLista, lista) {
+	pomLista.forEach(e => {
+		lista.push(e);
+	})
+}
+
+function parserPokusajUcitavanjaGenerika(kontekst, i, lista, novaLista, definicijaJezika) {
+	let s        = "<";
+	let pomLista = [];
+	let nastavak = true;
+	pomLista.push(lista[i]);
+	i++;
+
+	while(daLiJeWhiteSpace(lista[i][0])) {
+		pomLista.push(lista[i]);
+		s += lista[i][0]
+		i++
+	}
+
+	if(lista[i][1] == "") {
+		pomLista.push(lista[i]);
+		s += lista[i][0];
+		i++;	
+	}
+	else {
+		i++;
+		nastavak = false;
+		parserPraznjenjePomListe(pomLista, novaLista);
+	}
+
+	while(nastavak && daLiJeWhiteSpace(lista[i][0])) {
+		pomLista.push(lista[i]);
+		s += lista[i][0]
+		i++
+	}
+
+	if(nastavak && lista[i][0] == ">") {
+		pomLista.push(lista[i]);
+		s += lista[i][0]
+		i++;
+		novaLista.push( [ s , "generik" ] );
+	}
+	else {
+		i++;
+		parserPraznjenjePomListe(pomLista, novaLista);
+	}
+
+	return i - 1;
+}
+
 function formatiranjeIspisListe(lista, rezim) {
 	let s = "";
 	let alt1 = false, alt2 = true;
@@ -481,14 +532,14 @@ function formatiranjeIspisListe(lista, rezim) {
 		if(lista[i][0] == "") continue;
 
 		let t_0 = lista[i][0]
-		              .replaceAll("<", "&lt;")
-		              .replaceAll(">", "&gt;");
+		              .replace(/</g, "&lt;")
+		              .replace(/>/g, "&gt;");
 		let t_1 = lista[i][1];
 
 		if(rezim == "tech") {
 			t_0 = t_0
-			          .replace("\n", "ENTER")
-			          .replace("\t", "TAB");
+			          .replace(/\n/g, "ENTER")
+			          .replace(/\t/g, "TAB");
 			s += `[ |${t_0}| , ${t_1} ]\n---------------------------------\n`;
 			continue;
 		}
@@ -996,6 +1047,8 @@ let CSS_definicijaJezika = {
 	parser:                parserOpsti,
 	lekserTokeni:          CSS_lekserTokeni,
 	maksDuzinaSpajanje:    2,
+	kontekstZaGenerike:    -1,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  CSS_parserPrepravljanje,
 	parserTokeni:          CSS_parserTokeni,
 	parserSpecListe:       CSS_parserSpecListe,
@@ -1058,6 +1111,12 @@ let C_lekserTokeni = new Map( [
 	[ "["   , "otvorena_zagrada_niz"          ] ,
 	[ "]"   , "zatvorena_zagrada_niz"         ] ,
 
+] );
+
+let C_lekserUnarniOperatori = new Map( [
+	[ "++" , "unarni_operator" ],
+	[ "--" , "unarni_operator" ],
+	[ "!"  , "unarni_operator" ],
 ] );
 
 let C_parserPrepravljanje = new Map( [
@@ -1208,6 +1267,7 @@ let C_parserSpecListe = new Map();
 		[ "FILE"      , "specijalni_token" ] ,
 		[ "ReadKey"   , "specijalni_token" ] ,
 		[ "ReadLine"  , "specijalni_token" ] ,
+		[ "String"    , "specijalni_token" ] ,
 		[ "System"    , "specijalni_token" ] ,
 		[ "WriteLine" , "specijalni_token" ] ,
 		[ "cout"      , "specijalni_token" ] ,
@@ -1234,7 +1294,10 @@ let C_definicijaJezika = {
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
+	lekserUnarniOperatori: C_lekserUnarniOperatori,
 	maksDuzinaSpajanje:    3,
+	kontekstZaGenerike:    0,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       C_parserSpecListe,
@@ -1248,7 +1311,10 @@ let CLIKE_definicijaJezika = {
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
+	lekserUnarniOperatori: C_lekserUnarniOperatori,
 	maksDuzinaSpajanje:    3,
+	kontekstZaGenerike:    0,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       C_parserSpecListe,
@@ -1262,7 +1328,10 @@ let CPP_definicijaJezika = {
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
+	lekserUnarniOperatori: C_lekserUnarniOperatori,
 	maksDuzinaSpajanje:    3,
+	kontekstZaGenerike:    0,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       C_parserSpecListe,
@@ -1276,7 +1345,10 @@ let C_Sharp_definicijaJezika = {
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
+	lekserUnarniOperatori: C_lekserUnarniOperatori,
 	maksDuzinaSpajanje:    3,
+	kontekstZaGenerike:    0,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       C_parserSpecListe,
@@ -1343,6 +1415,7 @@ let Java_parserSpecListe = new Map();
 		[ "while"        , "rezervisana_rec" ] ,
 
 		[ "Add"           , "specijalni_token" ] ,
+		[ "LinkedList"    , "specijalni_token" ] ,
 		[ "List"          , "specijalni_token" ] ,
 		[ "LocalDate"     , "specijalni_token" ] ,
 		[ "LocalDateTime" , "specijalni_token" ] ,
@@ -1362,6 +1435,8 @@ let Java_parserSpecListe = new Map();
 		[ "now"           , "specijalni_token" ] ,
 		[ "out"           , "specijalni_token" ] ,
 		[ "printf"        , "specijalni_token" ] ,
+		[ "pop"           , "specijalni_token" ] ,
+		[ "push"          , "specijalni_token" ] ,
 		[ "string"        , "specijalni_token" ] ,
 		[ "util"          , "specijalni_token" ] ,
 
@@ -1376,7 +1451,10 @@ let Java_definicijaJezika = {
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
+	lekserUnarniOperatori: C_lekserUnarniOperatori,
 	maksDuzinaSpajanje:    3,
+	kontekstZaGenerike:    0,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       Java_parserSpecListe,
@@ -1490,7 +1568,10 @@ let JavaScript_definicijaJezika = {
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          C_lekserTokeni,
+	lekserUnarniOperatori: C_lekserUnarniOperatori,
 	maksDuzinaSpajanje:    3,
+	kontekstZaGenerike:    0,
+	kontekstZaRegex:       0,
 	parserPrepravaljanje:  C_parserPrepravljanje,
 	parserTokeni:          C_parserTokeni,
 	parserSpecListe:       JavaScript_parserSpecListe,
@@ -1834,6 +1915,8 @@ let HTML_definicijaJezika = {
 	parser:                parserOpsti,
 	lekserTokeni:          HTML_lekserTokeni,
 	maksDuzinaSpajanje:    4,
+	kontekstZaGenerike:    -1,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  HTML_parserPrepravljanje,
 	parserTokeni:          HTML_parserTokeni,
 	parserSpecListe:       HTML_parserSpecListe,
@@ -1847,6 +1930,8 @@ let XML_definicijaJezika = {
 	parser:                parserOpsti,
 	lekserTokeni:          HTML_lekserTokeni,
 	maksDuzinaSpajanje:    4,
+	kontekstZaGenerike:    -1,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  HTML_parserPrepravljanje,
 	parserTokeni:          HTML_parserTokeni,
 	parserSpecListe:       HTML_parserSpecListe,
@@ -1995,6 +2080,8 @@ let SQL_definicijaJezika = {
 	parser:                parserOpsti,
 	lekserTokeni:          SQL_lekserTokeni,
 	maksDuzinaSpajanje:    2,
+	kontekstZaGenerike:    -1,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  SQL_parserPrepravljanje,
 	parserTokeni:          SQL_parserTokeni,
 	parserSpecListe:       SQL_parserSpecListe,
@@ -2134,6 +2221,8 @@ let Python_definicijaJezika = {
 	parser:                parserOpsti,
 	lekserTokeni:          Python_lekserTokeni,
 	maksDuzinaSpajanje:    1,
+	kontekstZaGenerike:    0,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  Python_parserPrepravljanje,
 	parserTokeni:          Python_parserTokeni,
 	parserSpecListe:       Python_parserSpecListe,
@@ -2182,19 +2271,20 @@ let PHP_lekserTokeni = new Map( [
 	[ "*/" , "komentar" ] ,
 	[ "//" , "komentar" ] ,
 
-	[ "!=" , "operator" ] ,
-	[ "&&" , "operator" ] ,
-	[ "++" , "operator" ] ,
-	[ "--" , "operator" ] ,
-	[ "<=" , "operator" ] ,
-	[ "==" , "operator" ] ,
-	[ ">=" , "operator" ] ,
+	[ "!="  , "operator" ] ,
+	[ "&&"  , "operator" ] ,
+	[ "++"  , "operator" ] ,
+	[ "--"  , "operator" ] ,
+	[ "<="  , "operator" ] ,
+	[ "=="  , "operator" ] ,
+	[ ">="  , "operator" ] ,
+	[ "<<<" , "operator" ] ,
 
 ] );
 
 let PHP_parserPrepravljanje = new Map( [
 
-	[ 0 , [ true  , false , "tekst"           ] ] ,
+	[ 0 , [ true  , true  , "tekst"           ] ] ,
 	[ 1 , [ true  , true  , "html_tag"        ] ] ,
 	[ 2 , [ false , true  , "atribut_naziv"   ] ] ,
 	[ 3 , [ true  , true  , "niska_apostrofi" ] ] ,
@@ -2207,6 +2297,7 @@ let PHP_parserPrepravljanje = new Map( [
 	[ 13 , [ true  , true , "niska_apostrofi" ] ] ,
 	[ 14 , [ true  , true , "niska_navodnici" ] ] ,
 	[ 15 , [ true  , true , "niska_backtick"  ] ] ,
+	[ 16 , [ true  , true , "heredoc_nowdoc"  ] ] ,
 
 ] );
 
@@ -2223,10 +2314,11 @@ let PHP_parserTokeni = new Map();
 
 	let PHP_parserLista_1 = new Map( [
 
-		[ " "  , [ true  , true ,  2 , "white_space" ] ] ,
-		[ "\t" , [ true  , true ,  2 , "white_space" ] ] ,
-		[ ">"  , [ false , true , -1 , "html_tag"    ] ] ,
-		[ "/>" , [ false , true , -1 , "html_tag"    ] ] ,
+		[ " "  , [ true  , true  ,  2 , "white_space" ] ] ,
+		[ "\t" , [ true  , true  ,  2 , "white_space" ] ] ,
+		[ ">"  , [ false , true  , -1 , "html_tag"    ] ] ,
+		[ "/>" , [ false , true  , -1 , "html_tag"    ] ] ,
+		[ "<?" , [ true  , false , 10 , "php_blok"    ] ] ,
 
 	] );
 
@@ -2238,6 +2330,7 @@ let PHP_parserTokeni = new Map();
 		[ "="  , [ false , false , -1 , "atribut_dodela"  ] ] ,
 		[ "\'" , [ true  , false ,  3 , "niska_apostrofi" ] ] ,
 		[ "\"" , [ true  , false ,  4 , "niska_navodnici" ] ] ,
+		[ "<?" , [ true  , false , 10 , "php_blok"    ] ] ,
 
 	] );
 
@@ -2262,12 +2355,14 @@ let PHP_parserTokeni = new Map();
 
 	let PHP_parserLista_10 = new Map( [
 
-		[ "/*" , [ true  , false , 11, "komentar"          ] ] ,
-		[ "//" , [ true  , false , 12, "komentar"          ] ] ,
-		[ "\"" , [ true  , false , 13, "niska_navodnici"   ] ] ,
-		[ "'"  , [ true  , false , 14, "niska_apostrofi"   ] ] ,
-		[ "`"  , [ true  , false , 15, "niska_backtick"    ] ] ,
-		[ "?>" , [ false , true  , -1, "php_blok"          ] ] ,
+		[ "/*"  , [ true  , false , 11, "komentar"        ] ] ,
+		[ "//"  , [ true  , false , 12, "komentar"        ] ] ,
+		[ "\""  , [ true  , false , 13, "niska_navodnici" ] ] ,
+		[ "'"   , [ true  , false , 14, "niska_apostrofi" ] ] ,
+		[ "`"   , [ true  , false , 15, "niska_backtick"  ] ] ,
+		[ "->"  , [ false , false , -1, "operator"        ] ] ,
+		[ "<<<" , [ true  , false , 16, "heredoc_nowdoc"  ] ] ,
+		[ "?>"  , [ false , true  , -1, "php_blok"        ] ] ,
 
 	] );
 
@@ -2301,6 +2396,12 @@ let PHP_parserTokeni = new Map();
 
 	] );
 
+	let PHP_parserLista_16 = new Map( [
+
+		[ ";"  , [ false , true , -1 , "operator" ] ] ,
+
+	] );
+
 PHP_parserTokeni.set( 0 , PHP_parserLista_0 )
                 .set( 1 , PHP_parserLista_1 )
                 .set( 2 , PHP_parserLista_2 )
@@ -2314,6 +2415,7 @@ PHP_parserTokeni.set( 0 , PHP_parserLista_0 )
                 .set( 13 , PHP_parserLista_13 )
                 .set( 14 , PHP_parserLista_14 )
                 .set( 15 , PHP_parserLista_15 )
+                .set( 16 , PHP_parserLista_16 )
 
 let PHP_parserSpecListe = new Map();
 
@@ -2434,7 +2536,9 @@ let PHP_definicijaJezika = {
 	lekser:                lekserOpsti,
 	parser:                parserOpsti,
 	lekserTokeni:          PHP_lekserTokeni,
-	maksDuzinaSpajanje:    2,
+	maksDuzinaSpajanje:    3,
+	kontekstZaGenerike:    10,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  PHP_parserPrepravljanje,
 	parserTokeni:          PHP_parserTokeni,
 	parserSpecListe:       PHP_parserSpecListe,
@@ -2528,6 +2632,8 @@ let JSON_definicijaJezika = {
 	parser:                parserOpsti,
 	lekserTokeni:          JSON_lekserTokeni,
 	maksDuzinaSpajanje:    1,
+	kontekstZaGenerike:    -1,
+	kontekstZaRegex:       -1,
 	parserPrepravaljanje:  JSON_parserPrepravljanje,
 	parserTokeni:          JSON_parserTokeni,
 	parserSpecListe:       JSON_parserSpecListe,
@@ -2806,6 +2912,8 @@ setTimeout(() => {
 	}
 }, 100);
 
+document.addEventListener("keydown", prepoznavanjeTastera);
+let poljeZaIspis = document.getElementById("polje_ispis");
 let listaTokena  = null;
 let radioDugme   = 1;
 let brojDugmica  = 14;
@@ -2855,3 +2963,5 @@ function prepoznavanjeTastera(event) {
 		default: break;
 	}
 }
+
+obradaKoda(tekstHTML, HTML_definicijaJezika, poljeZaIspis, "html");

@@ -31,6 +31,8 @@ highlighter_funkcije.js
 
 Dodata opcija za prepozanvanje generika (u svim jezicima) i opcije za prepoznavanje heredoc / nowdoc syntaxe u PHP-u i PHP blokova unutar HTML koda.
 
+Unapređeno prepoznavanje algebarskih izraza.
+
 ### 1.5.0
 
 Dodata opcija za paralelno procesiranje i unapređen algoritam za prepoznavanje regularnih izraza.

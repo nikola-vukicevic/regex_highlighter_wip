@@ -27,6 +27,10 @@ highlighter_funkcije.js
 
 ## Log
 
+### 1.5.1
+
+Dodata opcija za prepozanvanje generika (u svim jezicima) i opcije za prepoznavanje heredoc / nowdoc syntaxe u PHP-u i PHP blokova unutar HTML koda.
+
 ### 1.5.0
 
 Dodata opcija za paralelno procesiranje i unapređen algoritam za prepoznavanje regularnih izraza.

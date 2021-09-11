@@ -140,6 +140,7 @@ span {
 .niska_backtick {
 	color: #8a3;	
 	color: #ce8;	
+	color: #bd8;	
 }
 
 .rezervisana_rec {
@@ -153,6 +154,7 @@ span {
 	color: #fee;
 	color: #fd4;
 	color: #fe8;
+	color: #fc9;
 }
 
 .blok_koda_otvarajuca_zagrada,
@@ -179,6 +181,7 @@ span {
 	color: #fe9;
 	color: #bcd;
 	color: #feb;
+	color: #cce6ff;
 }
 
 .et_direktiva,
@@ -317,9 +320,14 @@ span {
 }
 
 .regularni_izraz,
-.regex {
+.regex,
+.generik,
+.heredoc_nowdoc {
 	color: #aef;
 	color: #adf;
+	color: #99f;
+	color: #f9c;
+	color: #b9f;
 }
 
 .regex_pocetak,

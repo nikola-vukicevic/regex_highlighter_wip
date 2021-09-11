@@ -219,7 +219,7 @@ function lekserOpsti(tekst, definicijaJezika) {
 			i = obradaLekserEscapeSekvenca(z, str, lista, definicijaJezika, i, tekst);
 			continue;
 		}
-		
+
 		let rez = definicijaJezika.lekserTokeni.get(z);
 
 		if(rez != null) {
@@ -325,14 +325,21 @@ function parserOpsti(definicijaJezika, lista) {
 		parser.mapa     = definicijaJezika.parserTokeni.get(parser.kontekst);
 		parser.rez      = parser.mapa.get(lista[i][0]);
 
-		/* ----- Pokušaj učitavanja regularnog izraza ---------------------- */
+		/* ----- Pokušaj učitavanja regularnog izraza ----------------------- */
 
-		if( lista[i][0] == "/"/* && definicijaJezika.naziv == "JavaScript"*/ && parser.kontekst == 0) {
+		if(lista[i][0] == "/" && parser.kontekst == definicijaJezika.kontekstZaRegex) {
 			i = parserProveraRegularnogIzraza(parser.kontekst, i, lista, parser.novaLista, definicijaJezika);
 			continue;
 		}
+
+		/* ----- Pokušaj učitavanja generika -------------------------------- */
+
+		if(lista[i][0] == "<" && parser.kontekst == definicijaJezika.kontekstZaGenerike) {
+			i = parserPokusajUcitavanjaGenerika(parser.kontekst, i, lista, parser.novaLista, definicijaJezika);
+			continue;
+		}
 							
-		/* ----- Prepoznati token (koji menja, ili ne menja, kontekst) ----- */
+		/* ----- Prepoznati token (koji menja, ili ne menja, kontekst) ------ */
 
 		if(parser.rez != null) {
 			obradaPrepoznatogTokena(lista[i], lista, parser, definicijaJezika);
@@ -349,7 +356,7 @@ function parserOpsti(definicijaJezika, lista) {
 			continue;
 		}
 
-		/* ----- Pretraga lista specijalnih tokena ----- */
+		/* ----- Pretraga lista specijalnih tokena -------------------------- */
 
 		let specLista = definicijaJezika.parserSpecListe.get(parser.kontekst);
 
@@ -395,15 +402,9 @@ function pokusajUbacivanjaRegularnogIzraza(s, pomLista, novaLista, definicijaJez
 }
 
 function parserProveraRegularnogIzraza(kontekst, i, lista, novaLista, definicijaJezika) {
-	if(definicijaJezika.naziv != "JavaScript") {// Ako se pojavi još neki jezik,
-		novaLista.push(lista[i]);               // ovde treba dodati uslov
-		return i;
-	}
-
-	let pronadjenPar    = false;
-	//let pronadjenSpecOp = false;
-	let pomLista        = []
-	let s               = "/";
+	let pronadjenPar = false;
+	let pomLista     = []
+	let s            = "/";
 	pomLista.push( lista[i] );
 	i++;
 	
@@ -415,16 +416,10 @@ function parserProveraRegularnogIzraza(kontekst, i, lista, novaLista, definicija
 			pronadjenPar    = true;
 		}
 
-		/*		
-		if(lista[i][1] == "operator" && lista[i][0].length > 1) {
-			pronadjenSpecOp = true;
-		}
-		//*/
-
 		i++;
 	}
 
-	if(pronadjenPar/* && !pronadjenSpecOp*/) {
+	if(pronadjenPar) {
 		pokusajUbacivanjaRegularnogIzraza(s, pomLista, novaLista, definicijaJezika);
 	}
 	else {
@@ -433,6 +428,57 @@ function parserProveraRegularnogIzraza(kontekst, i, lista, novaLista, definicija
 
 	return i-1;
 }
+
+function parserPraznjenjePomListe(pomLista, lista) {
+	pomLista.forEach(e => {
+		lista.push(e);
+	})
+}
+
+function parserPokusajUcitavanjaGenerika(kontekst, i, lista, novaLista, definicijaJezika) {
+	let s        = "<";
+	let pomLista = [];
+	let nastavak = true;
+	pomLista.push(lista[i]);
+	i++;
+
+	while(daLiJeWhiteSpace(lista[i][0])) {
+		pomLista.push(lista[i]);
+		s += lista[i][0]
+		i++
+	}
+
+	if(lista[i][1] == "") {
+		pomLista.push(lista[i]);
+		s += lista[i][0];
+		i++;	
+	}
+	else {
+		i++;
+		nastavak = false;
+		parserPraznjenjePomListe(pomLista, novaLista);
+	}
+
+	while(nastavak && daLiJeWhiteSpace(lista[i][0])) {
+		pomLista.push(lista[i]);
+		s += lista[i][0]
+		i++
+	}
+
+	if(nastavak && lista[i][0] == ">") {
+		pomLista.push(lista[i]);
+		s += lista[i][0]
+		i++;
+		novaLista.push( [ s , "generik" ] );
+	}
+	else {
+		i++;
+		parserPraznjenjePomListe(pomLista, novaLista);
+	}
+
+	return i - 1;
+}
+
 
 /* -------------------------------------------------------------------------- */
 // Pomoćne funkcije:
@@ -452,14 +498,14 @@ function formatiranjeIspisListe(lista, rezim) {
 		if(lista[i][0] == "") continue;
 		
 		let t_0 = lista[i][0]
-		              .replaceAll("<", "&lt;")
-		              .replaceAll(">", "&gt;");
+		              .replace(/</g, "&lt;")
+		              .replace(/>/g, "&gt;");
 		let t_1 = lista[i][1];
 		
 		if(rezim == "tech") {
 			t_0 = t_0
-			          .replace("\n", "ENTER")
-			          .replace("\t", "TAB");
+			          .replace(/\n/g, "ENTER")
+			          .replace(/\t/g, "TAB");
 			s += `[ |${t_0}| , ${t_1} ]\n---------------------------------\n`;
 			continue;
 		}

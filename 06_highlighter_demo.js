@@ -2,8 +2,8 @@
 // Copyright (c) 2021. Nikola Vukićević
 /* -------------------------------------------------------------------------- */
 
-// document.addEventListener("keydown", prepoznavanjeTastera);
-// let poljeZaIspis = document.getElementById("polje_ispis");
+document.addEventListener("keydown", prepoznavanjeTastera);
+let poljeZaIspis = document.getElementById("polje_ispis");
 let listaTokena  = null;
 let radioDugme   = 1;
 let brojDugmica  = 14;
@@ -62,7 +62,7 @@ function prepoznavanjeTastera(event) {
 //let t1 = performance.now();
 /* -------------------------------------------------------------------------- */
 
-//obradaKoda(tekstHTML, HTML_definicijaJezika, poljeZaIspis, "html");
+obradaKoda(tekstHTML, HTML_definicijaJezika, poljeZaIspis, "html");
 // obradaKoda(tekstC, CLIKE_definicijaJezika, poljeZaIspis, "html");
 // obradaKoda(tekstJS, JavaScript_definicijaJezika, poljeZaIspis, "html");
 

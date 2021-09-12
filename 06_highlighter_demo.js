@@ -43,6 +43,8 @@ function radioKlik(n) {
 	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 function prebacivanjeJezika(smer) {
 	radioDugme += smer;
 	if(radioDugme > brojDugmica) radioDugme = 1;
@@ -50,6 +52,8 @@ function prebacivanjeJezika(smer) {
 	rD.checked = true;
 	radioKlik(radioDugme);
 }
+
+/* -------------------------------------------------------------------------- */
 
 function prepoznavanjeTastera(event) {
 	switch(event.keyCode) {

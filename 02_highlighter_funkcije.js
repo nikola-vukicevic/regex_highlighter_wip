@@ -14,12 +14,16 @@ function daLiJeWhiteSpace(z) {
 	return z == " " || z == "\t" || z == "\n";
 }
 
+/* -------------------------------------------------------------------------- */
+
 function daLiJeCifra(z) {
 	return z[0] >= '0' && z[0] <= '9';
 }
 
+/* -------------------------------------------------------------------------- */
+
 // Svaki put kada se promeni vrsta tokena koji se učitava,
-// string se premešta u listua 
+// string se premešta u listu 
 
 function praznjenjeStringova(str, lista, definicijaJezika) {
 	if(str.s == "") return; // uslov je ovde, da ne bi bio na "100" mesta
@@ -38,12 +42,16 @@ function praznjenjeStringova(str, lista, definicijaJezika) {
 	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 // whitespace-ovi, pojedinačno, idu direktno u listu
 
 function obradaLekserWhiteSpace(z, str, lista, definicijaJezika) {
 	praznjenjeStringova(str, lista, definicijaJezika);
 	lista.push( [ z , "white_space" ] );
 }
+
+/* -------------------------------------------------------------------------- */
 
 // Brojevi se učitavaju kao brojevi, ako stoje samostalno, ili kao
 // deo niske običnih znakova, ako je ta niska već započeta
@@ -68,6 +76,8 @@ function obradaLekserBroj(z, str, lista, definicijaJezika) {
 	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 // Escape sekvence se direktno prosleđuju u listu
 // kontekst dobijaju preko parsera
 // Postoji i if koji, "eto, da budemo fini", proverava da li (zapravo)
@@ -87,6 +97,8 @@ function obradaLekserEscapeSekvenca(z, str, lista, definicijaJezika, i, tekst) {
 	return i;
 }
 
+/* -------------------------------------------------------------------------- */
+
 // Obični znakovi idu direktno u nisku
 
 function obradaLekserObicanZnak(z, str, lista, definicijaJezika) {
@@ -94,6 +106,8 @@ function obradaLekserObicanZnak(z, str, lista, definicijaJezika) {
 	str.i  = 0;
 	str.s += z;
 }
+
+/* -------------------------------------------------------------------------- */
 
 /* ---------------------------------------- */ 
 // Prepoznavanje specijalnih tokena
@@ -119,6 +133,8 @@ function ubacivanje_s_0(str, mapa, lista) {
 	str.s = str.s.substring(1, str.s.length);
 }
 
+/* -------------------------------------------------------------------------- */
+
 function analiza_str_s_Substringova(str, mapa, lista) {
 	let g2 = str.s.length;
 	let g1 = g2 - 1;
@@ -141,6 +157,8 @@ function analiza_str_s_Substringova(str, mapa, lista) {
 	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 // funkcija ubacivanjeSpecToken proradi svaki put kada se učita niska
 // specijalnih znakova čija dužina odgovara maksimalnoj dužini specijalne
 // niske za dati jezik, ili, kada se promeni kontekst učitavanja (kada se
@@ -158,6 +176,8 @@ function ubacivanjeSpecToken(str, lista, definicijaJezika) {
 		analiza_str_s_Substringova(str, mapa, lista);
 	}
 }
+
+/* -------------------------------------------------------------------------- */
 
 // Osnovna funkcija za obradu specijalnih znakova (obradaLekserSpecZnak),
 // proverava da li je vreme za slanje niske specijalnih znakova na obradu
@@ -178,6 +198,8 @@ function obradaLekserSpecZnak(z, str, lista, definicijaJezika) {
 		str.s += z;
 	}
 }
+
+/* -------------------------------------------------------------------------- */
 
 // Lekser "opšti" je označen kao takav, zato što (u drugoj datoteci) postoji
 // verzija leksera koja funkcioniše preko regularnih izraza.
@@ -303,6 +325,8 @@ function obradaPrepoznatogTokena(token, lista, parser, definicijaJezika) {
 	//*/
 }
 
+/* -------------------------------------------------------------------------- */
+
 // Parser opšteg tipa je (kao i lekser), označen kao takav, da bi se
 // razlikovao od parsera koji odgovara lekseru koji koristi
 // regularne izraze
@@ -388,11 +412,15 @@ function parserOpsti(definicijaJezika, lista) {
 	return parser.novaLista;
 }
 
+/* -------------------------------------------------------------------------- */
+
 function neuspesniPokusajUbacivanjaRegularnogIzraza(pomLista, novaLista) {
 	pomLista.forEach(e => {
 		novaLista.push(e);
 	});
 }
+
+/* -------------------------------------------------------------------------- */
 
 function pokusajUbacivanjaRegularnogIzraza(s, pomLista, novaLista, definicijaJezika) {
 	if(!analizaIzraza(pomLista,  definicijaJezika)) {
@@ -402,6 +430,8 @@ function pokusajUbacivanjaRegularnogIzraza(s, pomLista, novaLista, definicijaJez
 		neuspesniPokusajUbacivanjaRegularnogIzraza(pomLista, novaLista);
 	}
 }
+
+/* -------------------------------------------------------------------------- */
 
 function parserProveraRegularnogIzraza(kontekst, i, lista, novaLista, definicijaJezika) {
 	let pronadjenPar = false;
@@ -431,11 +461,15 @@ function parserProveraRegularnogIzraza(kontekst, i, lista, novaLista, definicija
 	return i-1;
 }
 
+/* -------------------------------------------------------------------------- */
+
 function parserPraznjenjePomListe(pomLista, lista) {
 	pomLista.forEach(e => {
 		lista.push(e);
 	})
 }
+
+/* -------------------------------------------------------------------------- */
 
 function parserPokusajUcitavanjaGenerika(kontekst, i, lista, novaLista, definicijaJezika) {
 	let s        = "<";
@@ -481,7 +515,6 @@ function parserPokusajUcitavanjaGenerika(kontekst, i, lista, novaLista, definici
 	return i - 1;
 }
 
-
 /* -------------------------------------------------------------------------- */
 // Pomoćne funkcije:
 /* -------------------------------------------------------------------------- */
@@ -522,6 +555,8 @@ function formatiranjeIspisListe(lista, rezim) {
 	return s;
 }
 
+/* -------------------------------------------------------------------------- */
+
 function vremeObradeIspis(t1, naziv) {
 	let t2 = performance.now();
 	let odziv = t2 - t1 + "ms";
@@ -541,7 +576,9 @@ function ispisKodaTekst(tekst, poljeZaIspis) {
 	poljeZaIspis.innerHTML = "";
 	poljeZaIspis.appendChild(tekstKod);
 }
-//
+
+/* -------------------------------------------------------------------------- */
+
 function obradaKoda(tekst, definicijaJezika, poljeZaIspis, rezim) {
 	
 	/* ---------------------------------------------------------------------- */
@@ -568,6 +605,8 @@ function obradaKoda(tekst, definicijaJezika, poljeZaIspis, rezim) {
 	/* ---------------------------------------------------------------------- */
 }
 
+/* -------------------------------------------------------------------------- */
+
 function obradaKodaWorker(tekst, definicijaJezika, poljeZaIspis, rezim) {
 	
 	/* ---------------------------------------------------------------------- */
@@ -591,3 +630,5 @@ function obradaKodaWorker(tekst, definicijaJezika, poljeZaIspis, rezim) {
 	return listaTokena;
 
 }
+
+/* -------------------------------------------------------------------------- */

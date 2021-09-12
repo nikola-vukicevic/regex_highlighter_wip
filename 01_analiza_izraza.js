@@ -2,21 +2,33 @@
 // Copyright (c) 2021. Nikola Vukićević
 /* -------------------------------------------------------------------------- */
 
-// Cela svrha ove poveće datoteke je da omogući funkciji za parisranje tokena,
-// da prepozna da li je određena sekvenca između dva tokena "/" algebarski izraz,
-// ili regularni izraz (pri čemu je ideja da se ne koriste regularni izrazi).
-// 
-// Funkcija analizaIzraza uzima nisku znakova, kreira tokene i, preko algoritma
-// Shunting Yard, proverava da li tokeni tvore algebarski izraz, to jest, da li
-// se poklapaju operandi i operatori, kao i otvorene i zatvorene zagrade.
+// Cela svrha ove poveće datoteke je samo to da omogući funkciji za
+// parisranje tokena da prepozna da li je određena sekvenca između dva
+// tokena "/", algebarski izraz, ili regularni izraz (pri čemu je ideja da
+// se, za proveru, ne koriste regularni izraz koji prepoznaje
+// regularne izraze).
+//
+// Funkcija analizaIzraza uzima nisku znakova, kreira tokene i, preko
+// algoritma Shunting Yard, proverava da li tokeni tvore algebarski izraz,
+// to jest, da li se poklapaju operandi i operatori, kao i otvorene i
+// zatvorene zagrade.
+
+/* -------------------------------------------------------------------------- */
 
 function analizaIzrazaTokenDaLiJeWhiteSpace(token) {
 	return token[0] == " " || token[0] == "\t";
 }
 
-function analizaIzrazaPromenaKonteksta(tkn, stek, prethodniTip) { // 1 - otvorena zagrada;
-	let kontekst = stek[stek.length - 1];                         // 2 - zatvorena zagrada
-                                                                  // 3 - navodnici, apostrofi, backtick
+/* -------------------------------------------------------------------------- */
+
+// Kontekst čitanja tokena:
+//   1 - otvorena zagrada;
+//   2 - zatvorena zagrada
+//   3 - navodnici, apostrofi, backtick
+
+function analizaIzrazaPromenaKonteksta(tkn, stek, prethodniTip) {
+	let kontekst = stek[stek.length - 1];
+
 	if(tkn == 1) {
 		if(prethodniTip == "operator")
 			stek.push(0);
@@ -42,6 +54,21 @@ function analizaIzrazaPromenaKonteksta(tkn, stek, prethodniTip) { // 1 - otvoren
 		}
 	}
 }
+
+/* -------------------------------------------------------------------------- */
+
+// Donja funkcija, ostavlja samo 'relevantne' tokene, dok se ostali zanemaruju!
+// Na primer, u obradi izraza ....
+// 
+//   	"a * -(f12("ime", "prezime", 12.54) + b) + --c"
+// 
+//  ... ostaće samo tokeni:
+// 
+// 	  "a * -(f12 + b) + --c"
+// 
+// .... što, naravno, ne bi bio adekvatan način za računanje vrednosti
+// izraza, ali jeste sasvim prigodan način za proveru da li se izraz
+// poklapa sa obrascem za zapis algebarskih izraza.
 
 function analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika) {
 	let tokeni       = [];
@@ -83,54 +110,135 @@ function analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika) {
 	return tokeni;
 }
 
+/* -------------------------------------------------------------------------- */
+
+function ShuntingYard1ObradaOperand(podaci) {
+	podaci.red.push("a");
+	podaci.prethodniTip = "a";
+}
+
+/* -------------------------------------------------------------------------- */
+
+function ShuntingYard1ObradaOtvorenaZagrada(podaci) {
+	podaci.stek.push("(");
+	podaci.prethodniTip = "+";
+}
+
+/* -------------------------------------------------------------------------- */
+
+function ShuntingYard1ObradaZatvorenaZagrada(podaci) {
+	while(podaci.stek.length > 0 && podaci.stek[podaci.stek.length - 1] == "+") {
+		podaci.red.push(podaci.stek[podaci.stek.length - 1]);
+		podaci.stek.pop();
+	}
+	if(podaci.stek.length > 0) podaci.stek.pop();
+	podaci.prethodniTip = "+";
+}
+
+/* -------------------------------------------------------------------------- */
+
+// Pojava unarnog minusa u JS izrazima iziskuje posebnu obradu, to jest,
+// mora se napraviti razlika između unarnog minusa (koji se, kao i ostali
+// unarni operatori, zanemaruje) i binarnog minusa (koji ostaje deo izraza).
+
+function ShuntingYard1ObradaMinus(podaci) {
+	if(podaci.prethodniTip == "a") {
+		if(podaci.stek.length > 0 && podaci.stek[podaci.stek.length - 1] == "+") {
+			podaci.red.push("+");
+		}
+		else {
+			podaci.stek.push("+");
+		}	
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+
+function ShuntingYard1ObradaOperator(podaci) {
+	if(podaci.stek.length > 0 &&podaci. stek[podaci.stek.length - 1] == "+") {
+		podaci.red.push("+");                  
+	}                             // U pravom Shunting Yard-u, operator bi      
+	else {                        // se premeštao sa steka u red, ali, budući
+		podaci.stek.push("+");    // da su svi operandi svedeni na "a", a svi
+	}                             // operatori na "+", postupak se
+	podaci.prethodniTip = "+";    // može uprostiti
+	return;
+}
+
+/* -------------------------------------------------------------------------- */
+
+function ShuntingYard1ObradaPraznjenjeSteka(podaci) {
+	while(podaci.stek.length > 0) {
+		podaci.red.push("+");
+		podaci.stek.pop();
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+
+/*
+	Funkcija ShuntingYard1 obavlja prebacivanje izraza iz infiksne u
+	postfiksnu notaciju, pri čemu se unarni operatori zanemaruju, što
+	(ponovo) nije adekvatan način za računanje vrednosti algebarskih izraza,
+	ali jeste raktičan način da se (oavakav pojednostavljeni)algoritam
+	rastereti nepotrebnih provera.
+*/
+
 function ShuntingYard1(lista) {
-	let red  = [];
-	let stek = [];
+	let shunting_yard = {
+		red:          [],
+		stek:         [],
+		prethodniTip: "+"
+	}
 
 	lista.forEach(t => {
 		if(t[1] == "") {
-			red.push("a");
+			ShuntingYard1ObradaOperand(shunting_yard);
 			return;
 		}
 
 		if(t[0] == "(") {
-			stek.push("(");
+			ShuntingYard1ObradaOtvorenaZagrada(shunting_yard);
 			return;
 		}
-
+		
 		if(t[0] == ")") {
-			while(stek.length > 0 && stek[stek.length - 1] == "+") {
-				red.push(stek[stek.length - 1]);
-				stek.pop();
-			}
-			if(stek.length > 0) stek.pop();
+			ShuntingYard1ObradaZatvorenaZagrada(shunting_yard);
 			return;
 		}
 
-		if(t[1] == "operator") {               // U pravom Shunting Yard-u, operator bi
-			if(stek[stek.length - 1] == "+") { // se premeštao sa steka u red, ali, budući
-				red.push("+");                 // da su svi operandi svedeni na "a", a svi
-			}                                  // operatori na "+", postupak se
-			else {                             // može uprostiti
-				stek.push("+");
-			}
+		if(t[0] == "-") {
+			ShuntingYard1ObradaMinus(shunting_yard);
+			return;
+		}
+		
+		if(t[1] == "operator") {                
+			ShuntingYard1ObradaOperator(shunting_yard)
 			return;
 		}
 
 		if(t[1] != "") {
-			red.push("x");
+			shunting_yard.red.push("x");
 			return;
 		}
 	});
 
-	while(stek.length > 0) {
-		red.push("+");
-		stek.pop();
-	}
+	ShuntingYard1ObradaPraznjenjeSteka(shunting_yard);
 
-	//console.log(red)
-	return red;
+	//console.log(shunting_yard.red)
+	return shunting_yard.red;
 }
+
+/* -------------------------------------------------------------------------- */
+
+/*
+	Funkcija ShuntingYard2 obavlja simulaciju račuanja vrednosti algebarskog
+	izraza, pri čemu se proverva da li niz tokeni, ranije svedenih na "a"
+	(što je simbol za operand) i "+" (što je simbol za operator), predstavlja
+	pravilno definisan izraz u postfiksnoj notaciji, što se proverava na kraju,
+	tako što se posmatra da li na steku postoji tačno jedan operand (koji bi,
+	u "pravom" Shunting Yard algoritmu, bio rezultat računanja).
+*/
 
 function ShuntingYard2(lista) {
 	let stek  = [];
@@ -165,6 +273,19 @@ function ShuntingYard2(lista) {
 		return [];
 	}
 }
+
+/* -------------------------------------------------------------------------- */
+
+/*
+	Kratak rezime onoga što je ranije već pomenuto:
+
+		- Izraz se svodi na pojenostavljeni oblik, gde se pozivi funkcija
+		  svode na identifikatore
+		- Unarni operatori se zanemaruju
+		- Izraz se prevodi iz infiksnog u postfksni oblik
+		- Postfiksni izraz se proverava putem simulacije računanja
+		  vrednosti postfiksnog izraza (preko steka)
+*/
 
 function analizaIzraza(lista, definicijaJezika) {
 	let tokeni = null;

@@ -1,3 +1,7 @@
+/* -------------------------------------------------------------------------- */
+// Copyright (c) 2021. Nikola Vukićević
+/* -------------------------------------------------------------------------- */
+
 function workerObradaPodataka(worker, e, lista) {
 	INDEKS_THREAD = e.data.i_primljeno;
 	
@@ -37,6 +41,8 @@ function workerObradaPodataka(worker, e, lista) {
 	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 function definisanjeWorkera(worker, lista, i) {
 	worker.postMessage(
 			{
@@ -53,6 +59,8 @@ function definisanjeWorkera(worker, lista, i) {
 	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 function kreiranjeWorkera(lista) {
 	let listaWorkera = [];
 	for(let i = 0; i < BROJ_THREADOVA; i++) {
@@ -64,3 +72,5 @@ function kreiranjeWorkera(lista) {
 		definisanjeWorkera(worker, lista, i, workerObradaPodataka);
 	}
 }
+
+/* -------------------------------------------------------------------------- */

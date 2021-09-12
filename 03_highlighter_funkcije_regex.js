@@ -8,6 +8,8 @@ function pripremaListe(lista) {
 	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 function utiskivanjeTokenPojedinacni(regex, token, boolLexer, boolParser, lista) {
 	lista.forEach(e => {
 		if(e[2] == false && e[0].match(regex)) {
@@ -18,11 +20,15 @@ function utiskivanjeTokenPojedinacni(regex, token, boolLexer, boolParser, lista)
 	});
 }
 
+/* -------------------------------------------------------------------------- */
+
 function utiskivanjeTokena(listaRegexa, listaTokena) {
 	listaRegexa.forEach(e => {
 		utiskivanjeTokenPojedinacni(e[0], e[1], e[2], e[3], listaTokena);
 	});
 }
+
+/* -------------------------------------------------------------------------- */
 
 function obradaPrepoznatogTokenaRegex(listaTokenaRed, stek, listaParserRed) {
 	
@@ -59,6 +65,8 @@ function obradaPrepoznatogTokenaRegex(listaTokenaRed, stek, listaParserRed) {
  	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 function parserTokenPojedinacni(listaTokenaRed, stek, listaParserPredata, specijalneListe) {
 	let kontekst = stek[stek.length - 1];
 
@@ -87,6 +95,8 @@ function parserTokenPojedinacni(listaTokenaRed, stek, listaParserPredata, specij
 	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 function proveraSpecijalnihTokena(tokenRed, listaSpec, oznaka) {
 	if(binarnaPretraga(tokenRed[0], listaSpec)) {
 		tokenRed[2] = oznaka;
@@ -95,6 +105,8 @@ function proveraSpecijalnihTokena(tokenRed, listaSpec, oznaka) {
 	
 	return false;
 }
+
+/* -------------------------------------------------------------------------- */
 
 function binarnaPretraga(element, niz) {
 	let le  = 0, de = niz.length - 1;
@@ -119,6 +131,8 @@ function binarnaPretraga(element, niz) {
 	return false;
 }
 
+/* -------------------------------------------------------------------------- */
+
 function lekserRegex(tekst, definicija_jezika) {
 	
 	/* ---------------------------------------------------------------------- */
@@ -138,6 +152,8 @@ function lekserRegex(tekst, definicija_jezika) {
 	return lista;
 }
 
+/* -------------------------------------------------------------------------- */
+
 function parserRegex(definicija_jezika, listaTokena) {
 	let stek = [  0  ];
 
@@ -147,3 +163,5 @@ function parserRegex(definicija_jezika, listaTokena) {
 
 	return listaTokena;
 }
+
+/* -------------------------------------------------------------------------- */

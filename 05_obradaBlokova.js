@@ -9,6 +9,8 @@ let INDEKS_ID      = 1;
 let INDEKS_THREAD;
 let T1, T2, ODZIV;
 
+/* -------------------------------------------------------------------------- */
+
 function obradaBlokova(spisak) {
 	/* ----- telemetrija ---------------------------------------------------- */
 	let t1 = performance.now();
@@ -37,6 +39,8 @@ function obradaBlokova(spisak) {
 	/* ---------------------------------------------------------------------- */
 }
 
+/* -------------------------------------------------------------------------- */
+
 function punjenjeListeBlokova(klasa, lista) {
 	let listaBlokova = document.getElementsByClassName(klasa);
 	
@@ -49,10 +53,14 @@ function punjenjeListeBlokova(klasa, lista) {
 	}
 }
 
+/* -------------------------------------------------------------------------- */
+
 function obradaPojedinacnogBloka(blok, definicijaJezika) {
 	let tekst = blok.innerText;
 	obradaKoda(tekst, definicijaJezika, blok, REZIM_ISPISA);
 }
+
+/* -------------------------------------------------------------------------- */
 
 function odWrapperovanje() {
 	let wrapper = document.getElementById("wrapper");
@@ -60,9 +68,14 @@ function odWrapperovanje() {
 	wrapper.style.height = "auto";	
 }
 
+/* -------------------------------------------------------------------------- */
+
 //odWrapperovanje();
+
 setTimeout(() => {
 	if(typeof(document) !== "undefined") {
 		obradaBlokova(spisakKlasa);
 	}
 }, 100);
+
+/* -------------------------------------------------------------------------- */

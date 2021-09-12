@@ -49,11 +49,13 @@ function analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika) {
 
 		if(t[0] == "(") {
 			analizaIzrazaPromenaKonteksta(1, stek, prethodniTip);
+
 			return;
 		}
 
 		if(t[0] == ")") {
 			analizaIzrazaPromenaKonteksta(2, stek, prethodniTip);
+
 			return;
 		}
 
@@ -63,13 +65,12 @@ function analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika) {
 		}
 
 		if(kontekst > 0) return;
-		console.log(t)
+
 		if(t[0] == "/") return;
 		if(t[1] == "operator" && definicijaJezika.lekserUnarniOperatori.get(t[0]) != null) return;
 		prethodniTip = t[1];
 
 		tokeni.push(t);
-
 	});
 
 	return tokeni;
@@ -160,11 +161,10 @@ function ShuntingYard2(lista) {
 function analizaIzraza(lista, definicijaJezika) {
 	let tokeni = null;
 	tokeni = analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika);
-	console.log(tokeni)
+
 	tokeni = ShuntingYard1(tokeni);
-	console.log(tokeni)
+
 	tokeni = ShuntingYard2(tokeni);
-	console.log(tokeni)
 
 	return tokeni.length == 1 && tokeni[0] == "a";
 }
@@ -493,9 +493,9 @@ function parserPokusajUcitavanjaGenerika(kontekst, i, lista, novaLista, definici
 		i++;	
 	}
 	else {
-		i++;
 		nastavak = false;
 		parserPraznjenjePomListe(pomLista, novaLista);
+		return i - 1;
 	}
 
 	while(nastavak && daLiJeWhiteSpace(lista[i][0])) {
@@ -511,8 +511,8 @@ function parserPokusajUcitavanjaGenerika(kontekst, i, lista, novaLista, definici
 		novaLista.push( [ s , "generik" ] );
 	}
 	else {
-		i++;
 		parserPraznjenjePomListe(pomLista, novaLista);
+		return i - 1;
 	}
 
 	return i - 1;
@@ -2912,8 +2912,6 @@ setTimeout(() => {
 	}
 }, 100);
 
-document.addEventListener("keydown", prepoznavanjeTastera);
-let poljeZaIspis = document.getElementById("polje_ispis");
 let listaTokena  = null;
 let radioDugme   = 1;
 let brojDugmica  = 14;
@@ -2963,5 +2961,3 @@ function prepoznavanjeTastera(event) {
 		default: break;
 	}
 }
-
-obradaKoda(tekstHTML, HTML_definicijaJezika, poljeZaIspis, "html");

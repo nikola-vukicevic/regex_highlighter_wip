@@ -56,11 +56,13 @@ function analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika) {
 		
 		if(t[0] == "(") {
 			analizaIzrazaPromenaKonteksta(1, stek, prethodniTip);
+			//console.log(t)
 			return;
 		}
 		
 		if(t[0] == ")") {
 			analizaIzrazaPromenaKonteksta(2, stek, prethodniTip);
+			//console.log(t)
 			return;
 		}
 		
@@ -70,13 +72,12 @@ function analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika) {
 		}
 				
 		if(kontekst > 0) return;
-		console.log(t)
+		//console.log(t)
 		if(t[0] == "/") return;
 		if(t[1] == "operator" && definicijaJezika.lekserUnarniOperatori.get(t[0]) != null) return;
 		prethodniTip = t[1];
 		
 		tokeni.push(t);
-		//console.log(t)
 	});
 
 	return tokeni;
@@ -168,11 +169,11 @@ function ShuntingYard2(lista) {
 function analizaIzraza(lista, definicijaJezika) {
 	let tokeni = null;
 	tokeni = analizaIzrazaKreiranjeListeTokena(lista, definicijaJezika);
-	console.log(tokeni)
+	//console.log(tokeni)
 	tokeni = ShuntingYard1(tokeni);
-	console.log(tokeni)
+	//console.log(tokeni)
 	tokeni = ShuntingYard2(tokeni);
-	console.log(tokeni)
+	//console.log(tokeni)
 	
 	//console.log(tokeni)
 	return tokeni.length == 1 && tokeni[0] == "a";

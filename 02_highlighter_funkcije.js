@@ -334,10 +334,12 @@ function parserOpsti(definicijaJezika, lista) {
 
 		/* ----- Pokušaj učitavanja generika -------------------------------- */
 
+		///*
 		if(lista[i][0] == "<" && parser.kontekst == definicijaJezika.kontekstZaGenerike) {
 			i = parserPokusajUcitavanjaGenerika(parser.kontekst, i, lista, parser.novaLista, definicijaJezika);
 			continue;
 		}
+		//*/
 							
 		/* ----- Prepoznati token (koji menja, ili ne menja, kontekst) ------ */
 
@@ -454,9 +456,9 @@ function parserPokusajUcitavanjaGenerika(kontekst, i, lista, novaLista, definici
 		i++;	
 	}
 	else {
-		i++;
 		nastavak = false;
 		parserPraznjenjePomListe(pomLista, novaLista);
+		return i - 1;
 	}
 
 	while(nastavak && daLiJeWhiteSpace(lista[i][0])) {
@@ -472,8 +474,8 @@ function parserPokusajUcitavanjaGenerika(kontekst, i, lista, novaLista, definici
 		novaLista.push( [ s , "generik" ] );
 	}
 	else {
-		i++;
 		parserPraznjenjePomListe(pomLista, novaLista);
+		return i - 1;
 	}
 
 	return i - 1;

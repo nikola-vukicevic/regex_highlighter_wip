@@ -179,7 +179,6 @@ function analizaIzraza(lista, definicijaJezika) {
 	return tokeni.length == 1 && tokeni[0] == "a";
 }
 
-
 /* -------------------------------------------------------------------------- */
 // Telemetrija
 

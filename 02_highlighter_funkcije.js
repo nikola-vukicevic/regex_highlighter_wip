@@ -333,15 +333,15 @@ function obradaPrepoznatogTokena(token, lista, parser, definicijaJezika) {
 
 function parserOpsti(definicijaJezika, lista) {
 	let parser = {
-		novaLista:      [],
-		stek:           [ 0 ],
-		kontekst:       -1,
-		s:              "",
-		mapa:           null,
-		rez:            null,
-		spajanje:       false,
-		prepravljanje:  false,
-		klasa:          definicijaJezika.defaultKlasa
+		novaLista:     [],
+		stek:          [ 0 ],
+		kontekst:      -1,
+		s:             "",
+		mapa:          null,
+		rez:           null,
+		spajanje:      false,
+		prepravljanje: false,
+		klasa:         definicijaJezika.defaultKlasa
 	}
 
 	for(let i = 0; i < lista.length; i++) {
@@ -351,20 +351,19 @@ function parserOpsti(definicijaJezika, lista) {
 
 		/* ----- Pokušaj učitavanja regularnog izraza ----------------------- */
 
-		if(lista[i][0] == "/" && parser.kontekst == definicijaJezika.kontekstZaRegex) {
+		if(lista[i][0] == "=" && parser.kontekst == definicijaJezika.kontekstZaRegex) {
+			parser.novaLista.push( [ "=" , "operator" ] )
 			i = parserProveraRegularnogIzraza(parser.kontekst, i, lista, parser.novaLista, definicijaJezika);
 			continue;
 		}
-
+				
 		/* ----- Pokušaj učitavanja generika -------------------------------- */
 
-		///*
 		if(lista[i][0] == "<" && parser.kontekst == definicijaJezika.kontekstZaGenerike) {
 			i = parserPokusajUcitavanjaGenerika(parser.kontekst, i, lista, parser.novaLista, definicijaJezika);
 			continue;
 		}
-		//*/
-							
+									
 		/* ----- Prepoznati token (koji menja, ili ne menja, kontekst) ------ */
 
 		if(parser.rez != null) {
@@ -414,50 +413,18 @@ function parserOpsti(definicijaJezika, lista) {
 
 /* -------------------------------------------------------------------------- */
 
-function neuspesniPokusajUbacivanjaRegularnogIzraza(pomLista, novaLista) {
-	pomLista.forEach(e => {
-		novaLista.push(e);
-	});
-}
-
-/* -------------------------------------------------------------------------- */
-
-function pokusajUbacivanjaRegularnogIzraza(s, pomLista, novaLista, definicijaJezika) {
-	if(!analizaIzraza(pomLista,  definicijaJezika)) {
-		novaLista.push( [ s , "regularni_izraz"] );
-	}
-	else {
-		neuspesniPokusajUbacivanjaRegularnogIzraza(pomLista, novaLista);
-	}
-}
-
-/* -------------------------------------------------------------------------- */
-
 function parserProveraRegularnogIzraza(kontekst, i, lista, novaLista, definicijaJezika) {
-	let pronadjenPar = false;
-	let pomLista     = []
-	let s            = "/";
-	pomLista.push( lista[i] );
+	let pomLista = []
+	let s        = "";
 	i++;
 	
-	while(!pronadjenPar && lista[i][0] != "\n") {
+	while(lista[i][0] != "\n") {
 		pomLista.push(lista[i]);
 		s += lista[i][0];
-		
-		if(lista[i][0] == "/") {
-			pronadjenPar    = true;
-		}
-
 		i++;
 	}
 
-	if(pronadjenPar) {
-		pokusajUbacivanjaRegularnogIzraza(s, pomLista, novaLista, definicijaJezika);
-	}
-	else {
-		neuspesniPokusajUbacivanjaRegularnogIzraza(pomLista, novaLista);
-	}
-
+	analizaIzrazaPotencijalniRegex(pomLista, novaLista, definicijaJezika);
 	return i-1;
 }
 

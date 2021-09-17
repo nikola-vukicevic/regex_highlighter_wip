@@ -1505,20 +1505,22 @@ let SQL_definicijaJezika = {
 
 let Python_lekserTokeni = new Map( [
 	
-	[ "#"  , "" ] ,
-	[ "("  , "" ] ,
-	[ "["  , "" ] ,
-	[ "]"  , "" ] ,
-	[ "\"" , "" ] ,
-	[ "\'" , "" ] ,
-	[ "\`" , "" ] ,
-	[ ":"  , "" ] ,
-	[ "+"  , "" ] ,
-	[ "-"  , "" ] ,
-	[ "*"  , "" ] ,
-	[ "/"  , "" ] ,
-	[ "="  , "" ] ,
-	[ ","  , "" ] ,
+	[ "#"  , ""                      ] ,
+	[ "("  , "operator"              ] ,
+	[ ")"  , "operator"              ] ,
+	[ "["  , "otvorena_zagrada_niz"  ] ,
+	[ "]"  , "zatvorena_zagrada_niz" ] ,
+	[ "\"" , ""                      ] ,
+	[ "\'" , ""                      ] ,
+	[ "\`" , ""                      ] ,
+	[ ":"  , ""                      ] ,
+	[ "+"  , ""                      ] ,
+	[ "-"  , ""                      ] ,
+	[ "*"  , ""                      ] ,
+	[ "/"  , ""                      ] ,
+	[ "="  , ""                      ] ,
+	[ ","  , ""                      ] ,
+	[ "."  , ""                      ] ,
 
 ] );
 
@@ -1592,6 +1594,8 @@ let Python_parserSpecListe = new Map();
 	
 	let Python_parserSpecLista_0 = new Map( [
 		
+		/* ----- rezervisane reči ----- */
+
 		[ "False"    , "rezervisana_rec" ] ,
 		[ "None"     , "rezervisana_rec" ] ,
 		[ "True"     , "rezervisana_rec" ] ,
@@ -1627,7 +1631,20 @@ let Python_parserSpecListe = new Map();
 		[ "while"    , "rezervisana_rec" ] ,
 		[ "with"     , "rezervisana_rec" ] ,
 		[ "yield"    , "rezervisana_rec" ] ,
+
+		/* ----- specijalni tokeni ----- */
 	
+		[ "append"   , "specijalni_token" ] ,
+		[ "close"    , "specijalni_token" ] ,
+		[ "decode"   , "specijalni_token" ] ,
+		[ "len"      , "specijalni_token" ] ,
+		[ "open"     , "specijalni_token" ] ,
+		[ "pop"      , "specijalni_token" ] ,
+		[ "read"     , "specijalni_token" ] ,
+		[ "replace"  , "specijalni_token" ] ,
+		[ "split"    , "specijalni_token" ] ,
+		[ "write"    , "specijalni_token" ] ,
+
 	] );
 
 Python_parserSpecListe.set( 0 , Python_parserSpecLista_0 );

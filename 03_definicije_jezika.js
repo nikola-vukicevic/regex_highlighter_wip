@@ -1,7 +1,5 @@
 /* -------------------------------------------------------------------------- */
-//
 // Copyright (c) 2021. Nikola Vukićević
-//
 /* -------------------------------------------------------------------------- */
 
 // Syntax highlighter zasniva se na ideji da svaki jezik bude definisan na
@@ -2296,7 +2294,10 @@ let mapaKlasa = new Map();
 
 mapaKlasa.set("language-text",       TXT_definicijaJezika)
          .set("language-assembler",  Assembler_definicijaJezika)
+         .set("language-c",          C_definicijaJezika)
          .set("language-clike",      CLIKE_definicijaJezika)
+         .set("language-cpp",        CPP_definicijaJezika)
+         .set("language-csharp",     C_Sharp_definicijaJezika)
          .set("language-css",        CSS_definicijaJezika)
          .set("language-html",       HTML_definicijaJezika)
          .set("language-java",       Java_definicijaJezika)
@@ -2312,16 +2313,19 @@ mapaKlasa.set("language-text",       TXT_definicijaJezika)
 let spisakKlasa = [
 	"language-text",
 	"language-assembler",
+	"language-c",
+	"language-clike",
+	"language-cpp",
+	"language-csharp",
 	"language-css",
 	"language-html",
-	"language-javascript",
-	"language-clike",
 	"language-java",
+	"language-javascript",
 	"language-json",
 	"language-markup",
-	"language-sql",
+	"language-php",
 	"language-python",
 	"language-regex",
-	"language-php",
+	"language-sql",
 	"language-xml",
 ];

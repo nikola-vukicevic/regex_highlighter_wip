@@ -19,9 +19,11 @@ function radioKlik(n) {
 	
 	if(n == 1) {
 		document.getElementById("polje_ispis").classList.remove('language-php');
+		document.getElementById("polje_ispis").classList.remove('language-javascript');
 	}
 	else {
 		document.getElementById("polje_ispis").classList.add('language-php');
+		document.getElementById("polje_ispis").classList.add('language-javascript');
 	}
 	
 	switch(n) {

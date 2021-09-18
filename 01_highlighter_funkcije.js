@@ -1,7 +1,5 @@
 /* -------------------------------------------------------------------------- */
-//
 // Copyright (c) 2021. Nikola Vukićević
-//
 /* -------------------------------------------------------------------------- */
 
 // Datoteka sa glavnim funkcijama - detaljnija objašnjenja u nastavku
@@ -320,14 +318,10 @@ function obradaPrepoznatogTokena(token, lista, parser, definicijaJezika) {
 	/* ----- ubacivanje tokena u novu listu ----- */
 
 	parser.novaLista.push( [ token[0] , parser.rez[3] ] );
-	
-		/*
-	console.log(token)
-	console.log(parser.stek)
-	console.log(parser)
-	console.log("------------------------------")
-	//*/
+
 }
+
+/* -------------------------------------------------------------------------- */
 
 function parserRegexPush(token, lista, parser, definicijaJezika) {
 	parser.stek.push(101);
@@ -350,6 +344,8 @@ function parserRegexPush(token, lista, parser, definicijaJezika) {
 	parser.novaLista.push( [ "/" , "regularni_izraz" ] );
 }
 
+/* -------------------------------------------------------------------------- */
+
 function parserRegexPop(token, lista, parser, definicijaJezika) {
 	parser.stek.pop();
 
@@ -371,6 +367,97 @@ function parserRegexPop(token, lista, parser, definicijaJezika) {
 	parser.novaLista.push( [ "\n" , "white_space" ] );
 }
 
+/* -------------------------------------------------------------------------- */
+
+function parserObelezavanjePrethodnogTokena(lista, i, parser) {
+	if(lista[i][1] == "operator" || lista[i][1] == "zagrada_obicna_otvorena" || lista[i][1] == "otvorena_zagrada_niz")
+			parser.prethodni = "+";
+		else
+			parser.prethodni = "a";
+}
+
+/* -------------------------------------------------------------------------- */
+
+function parserObelezavanjeSpecijalnogTokena(token, parser, definicijaJezika) {
+	let specLista = definicijaJezika.parserSpecListe.get(parser.kontekst);
+
+	if(specLista) {
+		let specKlasa = specLista.get(token[0]);
+
+		if(specKlasa) {
+			parser.novaLista.push( [ token[0] , specKlasa ] );
+			parser.prethodni = "+";
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function parserUtil(token, lista, i, parser, definicijaJezika){
+	if(parser.rez != null) {
+		obradaPrepoznatogTokena(token, lista, parser, definicijaJezika);
+		return true;
+	}
+
+	if(token[1] != "white_space" && parser.kontekst == 0) {
+		parserObelezavanjePrethodnogTokena(lista, i, parser);
+	}
+
+	if(token[0] == "\n" && parser.kontekst == 101) {
+		parserRegexPop(token, parser.novaLista, parser, definicijaJezika);
+		return true;
+	}	
+}
+
+/* -------------------------------------------------------------------------- */
+
+function parserObradaPojedinacnogTokena(lista, i, parser, definicijaJezika) {
+
+	let token = lista[i];
+
+	/* ----- Pokušaj učitavanja regularnog izraza ----------------------- */
+
+	if(token[0] == "/" || token[0] == "/=") {
+		if(definicijaJezika.kontekstZaRegex == parser.kontekst && parser.kontekst == 0 && parser.prethodni == "+") {
+			parserRegexPush(token, parser.novaLista, parser, definicijaJezika);
+			return i;
+		}
+	}
+	
+	/* ----- Pokušaj učitavanja generika -------------------------------- */
+
+	if(token[0] == "<" && parser.kontekst == definicijaJezika.kontekstZaGenerike) {
+		i = parserPokusajUcitavanjaGenerika(parser.kontekst, i, lista, parser.novaLista, definicijaJezika);
+		return i;
+	}
+								
+	// Prepoznati token (koji menja, ili ne menja, kontekst), obeležavanje
+	// prethodnog tokena i prekidanje režima obeležavanja JS regexa pri
+	// prelasku u novi red
+
+	if(parserUtil(token, lista, i, parser, definicijaJezika)) return i;
+
+	/* ----- Režim spajanja --------------------------------------------- */
+	
+	if(parser.spajanje) {      // Ako je parser u režimu spajanja
+		parser.s += token[0];  // tokena, nema pretrage
+		return i;              // tokena u specijalnim listama!
+	}
+
+	/* ----- Pretraga lista specijalnih tokena -------------------------- */
+
+	if(parserObelezavanjeSpecijalnogTokena(token, parser, definicijaJezika)) return i;
+
+	/* ----- Da li se klasa tokena prepravlja ----- */
+
+	if(parser.prepravljanje && token[1] == "") {
+		token[1] = parser.klasa;
+	} 
+
+	parser.novaLista.push( token );
+	return i
+}
 
 /* -------------------------------------------------------------------------- */
 
@@ -397,97 +484,14 @@ function parserOpsti(definicijaJezika, lista) {
 		parser.mapa      = definicijaJezika.parserTokeni.get(parser.kontekst);
 		parser.rez       = parser.mapa.get(lista[i][0]);
 		
-		/* ----- Pokušaj učitavanja regularnog izraza ----------------------- */
-
-		if(lista[i][0] == "/" || lista[i][0] == "/=") {
-			if(definicijaJezika.kontekstZaRegex == parser.kontekst && parser.kontekst == 0 && parser.prethodni == "+") {
-				parserRegexPush(lista[i], parser.novaLista, parser, definicijaJezika);
-				continue;
-			}
-		}
-		
-		/* ----- Pokušaj učitavanja generika -------------------------------- */
-
-		if(lista[i][0] == "<" && parser.kontekst == definicijaJezika.kontekstZaGenerike) {
-			i = parserPokusajUcitavanjaGenerika(parser.kontekst, i, lista, parser.novaLista, definicijaJezika);
-			continue;
-		}
-									
-		/* ----- Prepoznati token (koji menja, ili ne menja, kontekst) ------ */
-
-		if(parser.rez != null) {
-			obradaPrepoznatogTokena(lista[i], lista, parser, definicijaJezika);
-			continue;
-		}
-
-		if(lista[i][1] != "white_space" && parser.kontekst == 0) {
-			if(lista[i][1] == "operator" || lista[i][1] == "zagrada_obicna_otvorena" || lista[i][1] == "otvorena_zagrada_niz")
-				parser.prethodni = "+";
-			else
-				parser.prethodni = "a";
-		}
-
-		if(lista[i][0] == "\n" && parser.kontekst == 101) {
-			parserRegexPop(lista[i], parser.novaLista, parser, definicijaJezika);
-			continue;
-		}
-
-		/* ----- Režim spajanja --------------------------------------------- */
-
-		// Ako je parser u režimu spajanja tokena, nema pretrage
-		// tokena u specijalnim listama!
-		
-		if(parser.spajanje) {
-			parser.s += lista[i][0];
-			continue;
-		}
-
-		/* ----- Pretraga lista specijalnih tokena -------------------------- */
-
-		let specLista = definicijaJezika.parserSpecListe.get(parser.kontekst);
-
-		if(specLista) {
-			let specKlasa = specLista.get(lista[i][0]);
-
-			if(specKlasa) {
-				parser.novaLista.push( [ lista[i][0] , specKlasa ] );
-				parser.prethodni = "+";
-				//lista[i][1] = rez;
-				continue;
-			}
-		}
-
-		/* ----- Da li se klasa tokena prepravlja ----- */
-
-		if(parser.prepravljanje && lista[i][1] == "") {
-			lista[i][1] = parser.klasa;
-		} 
-
-		parser.novaLista.push( lista[i] );
+		i = parserObradaPojedinacnogTokena(lista, i, parser, definicijaJezika);
 	}
 
 	if(parser.s != "") {
 		parser.novaLista.push( [ parser.s , parser.klasa ] );
 	}
-	console.log(parser.stek)
-	return parser.novaLista;
-}
-
-/* -------------------------------------------------------------------------- */
-
-function parserProveraRegularnogIzraza(kontekst, i, lista, novaLista, definicijaJezika) {
-	let pomLista = []
-	let s        = "";
-	i++;
 	
-	while(lista[i][0] != "\n") {
-		pomLista.push(lista[i]);
-		s += lista[i][0];
-		i++;
-	}
-
-	analizaIzrazaPotencijalniRegex(pomLista, novaLista, definicijaJezika);
-	return i-1;
+	return parser.novaLista;
 }
 
 /* -------------------------------------------------------------------------- */

@@ -430,13 +430,16 @@ let C_lekserUnarniOperatori = new Map( [
 
 let C_parserPrepravljanje = new Map( [
 	
-	[ 0 , [ false , false , "identifikator"             ] ] ,
-	[ 1 , [ true  , true  , "komentar"                  ] ] ,
-	[ 2 , [ true  , true  , "komentar"                  ] ] ,
-	[ 3 , [ true  , true  , "pretprocesorska_direktiva" ] ] ,
-	[ 4 , [ true  , true  , "niska_navodnici"           ] ] ,
-	[ 5 , [ true  , true  , "niska_apostrofi"           ] ] ,
-	[ 6 , [ true  , true  , "niska_backtick"            ] ] ,
+	[ 0   , [ false , false , "identifikator"             ] ] ,
+	[ 1   , [ true  , true  , "komentar"                  ] ] ,
+	[ 2   , [ true  , true  , "komentar"                  ] ] ,
+	[ 3   , [ true  , true  , "pretprocesorska_direktiva" ] ] ,
+	[ 4   , [ true  , true  , "niska_navodnici"           ] ] ,
+	[ 5   , [ true  , true  , "niska_apostrofi"           ] ] ,
+	[ 6   , [ true  , true  , "niska_backtick"            ] ] ,
+	[ 101 , [ true  , true  , "regularni_izraz"           ] ] ,
+	[ 102 , [ true  , true  , "regex_klase_znakova"       ] ] ,
+	[ 103 , [ true  , true  , "regex_zagrada"             ] ] ,
 
 ] );
 
@@ -492,13 +495,40 @@ let C_parserTokeni = new Map();
 	
 	] );
 
-C_parserTokeni.set( 0, C_parserLista_0 )
-              .set( 1, C_parserLista_1 )
-              .set( 2, C_parserLista_2 )
-              .set( 3, C_parserLista_3 )
-              .set( 4, C_parserLista_4 )
-              .set( 5, C_parserLista_5 )
-              .set( 6, C_parserLista_6 )
+	let C_parserLista_101 = new Map( [
+		
+		[ "["  , [ true  , false , 102 , "regex_klase_znakova" ] ] ,
+		[ "("  , [ true  , false , 103 , "regex_zagrada"       ] ] ,
+		[ "/"  , [ false , true  , -1  , "regularni_izraz"     ] ] ,
+	
+	] );
+
+	let C_parserLista_102 = new Map( [
+
+		//[ "["  , [ true  , false , 102 , "regex_klase_znakova" ] ] ,
+		//[ "("  , [ true  , false , 103 , "regex_zagrada"       ] ] ,
+		[ "]"  , [ false , true  , -1  , "regex_klase_znakova" ] ] ,
+	
+	] );
+
+	let C_parserLista_103 = new Map( [
+		
+		[ "["  , [ true  , false , 102 , "regex_klase_znakova" ] ] ,
+		[ "("  , [ true  , false , 103 , "regex_zagrada"       ] ] ,
+		[ ")"  , [ false , true  , -1  , "regex_zagrada"       ] ] ,
+	
+	] );
+
+C_parserTokeni.set( 0   , C_parserLista_0 )
+              .set( 1   , C_parserLista_1 )
+              .set( 2   , C_parserLista_2 )
+              .set( 3   , C_parserLista_3 )
+              .set( 4   , C_parserLista_4 )
+              .set( 5   , C_parserLista_5 )
+              .set( 6   , C_parserLista_6 )
+              .set( 101 , C_parserLista_101 )
+              .set( 102 , C_parserLista_102 )
+              .set( 103 , C_parserLista_103 )
 
 let C_parserSpecListe = new Map();
 
@@ -899,32 +929,52 @@ let JavaScript_parserSpecListe = new Map();
 		/* ----- specijalni tokeni ----- */
 
 		[ "Date"                   , "specijalni_token" ] ,
+		[ "Error"                  , "specijalni_token" ] ,
 		[ "Promise"                , "specijalni_token" ] ,
 		[ "all"                    , "specijalni_token" ] ,
 		[ "async"                  , "specijalni_token" ] ,
+		[ "classList"              , "specijalni_token" ] ,
+		[ "className"              , "specijalni_token" ] ,
 		[ "console"                , "specijalni_token" ] ,
+		[ "contains"               , "specijalni_token" ] ,
 		[ "constructor"            , "specijalni_token" ] ,
+		[ "currentScript"          , "specijalni_token" ] ,
 		[ "document"               , "specijalni_token" ] ,
 		[ "error"                  , "specijalni_token" ] ,
+		[ "exec"                   , "specijalni_token" ] ,
 		[ "fetch"                  , "specijalni_token" ] ,
+		[ "forEach"                , "specijalni_token" ] ,
 		[ "getElementById"         , "specijalni_token" ] ,
 		[ "getElementsByClassName" , "specijalni_token" ] ,
+		[ "getElementsByTagName"   , "specijalni_token" ] ,
 		[ "getItem"                , "specijalni_token" ] ,
+		[ "indexOf"                , "specijalni_token" ] ,
 		[ "innerHTML"              , "specijalni_token" ] ,
 		[ "innerText"              , "specijalni_token" ] ,
+		[ "isArray"                , "specijalni_token" ] ,
+		[ "length"                 , "specijalni_token" ] ,
 		[ "localStorage"           , "specijalni_token" ] ,
 		[ "log"                    , "specijalni_token" ] ,
 		[ "map"                    , "specijalni_token" ] ,
+		[ "match"                  , "specijalni_token" ] ,
+		[ "parentElement"          , "specijalni_token" ] ,
 		[ "pop"                    , "specijalni_token" ] ,
 		[ "push"                   , "specijalni_token" ] ,
+		[ "querySelectorAll"       , "specijalni_token" ] ,
 		[ "reject"                 , "specijalni_token" ] ,
+		[ "replace"                , "specijalni_token" ] ,
 		[ "resolve"                , "specijalni_token" ] ,
 		[ "sessionStorage"         , "specijalni_token" ] ,
 		[ "setInterval"            , "specijalni_token" ] ,
 		[ "setItem"                , "specijalni_token" ] ,
 		[ "setTimeout"             , "specijalni_token" ] ,
 		[ "shift"                  , "specijalni_token" ] ,
+		[ "slice"                  , "specijalni_token" ] ,
+		[ "src"                    , "specijalni_token" ] ,
 		[ "then"                   , "specijalni_token" ] ,
+		[ "toLowerCase"            , "specijalni_token" ] ,
+		[ "toString"               , "specijalni_token" ] ,
+		[ "toUpperCase"            , "specijalni_token" ] ,
 
 	] );
 

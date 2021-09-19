@@ -27,6 +27,10 @@ highlighter_funkcije.js
 
 ## Log
 
+### 1.5.3
+
+Optimizovan algoritam za izdvajanje regularnih izraza u JS-u (+ druge sitne optimizacije koda);
+
 ### 1.5.1
 
 Dodata opcija za prepozanvanje generika (u svim jezicima) i opcije za prepoznavanje heredoc / nowdoc syntaxe u PHP-u i PHP blokova unutar HTML koda.

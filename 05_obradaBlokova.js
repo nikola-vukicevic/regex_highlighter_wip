@@ -2,7 +2,7 @@
 // Copyright (c) 2021. Nikola Vukićević
 /* -------------------------------------------------------------------------- */
 
-let MULTITHREADING = typeof(Worker) !== undefined && true;
+let MULTITHREADING = typeof(Worker) !== undefined && false;
 let BROJ_THREADOVA = navigator.hardwareConcurrency;
 let KORAK          = BROJ_THREADOVA;
 let INDEKS_ID      = 1;

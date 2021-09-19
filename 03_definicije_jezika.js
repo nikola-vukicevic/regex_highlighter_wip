@@ -1391,15 +1391,15 @@ let XML_definicijaJezika = {
 
 let SQL_lekserTokeni = new Map( [
 	
-	[ "--" , "komentar" ] ,
-	[ ";"  , ""         ] ,
-	[ "-"  , ""         ] ,
-	[ "("  , ""         ] ,
-	[ ")"  , ""         ] ,
-	[ ","  , ""         ] ,
-	[ "\"" , ""         ] ,
-	[ "\'" , ""         ] ,
-	[ "\`" , ""         ] ,
+	[ "--" , "komentar"                 ] ,
+	[ ";"  , ""                         ] ,
+	[ "-"  , ""                         ] ,
+	[ "("  , "zagrada_obicna_otvorena"  ] ,
+	[ ")"  , "zagrada_obicna_zatvorena" ] ,
+	[ ","  , ""                         ] ,
+	[ "\"" , ""                         ] ,
+	[ "\'" , ""                         ] ,
+	[ "\`" , ""                         ] ,
 
 ] );
 
